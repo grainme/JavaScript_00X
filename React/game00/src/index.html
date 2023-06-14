@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script
+      src="https://unpkg.com/react@17/umd/react.production.min.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <title>Hello</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="text/babel">
+      function App() {
+        const [state, setState] = React.useState({
+          num1: 2,
+          num2: 4,
+          response: "",
+          score: 0,
+          incorrect: false,
+        });
+
+        function updateValue() {
+          setState({
+            ...state,
+            response: event.target.value,
+          });
+        }
+
+        function keyPressed() {
+          if (event.key === "Enter") {
+            const ans = parseInt(state.response);
+            if (state.num1 + state.num2 === ans) {
+              setState({
+                ...state,
+                num1: Math.ceil(Math.random() * 10),
+                num2: Math.ceil(Math.random() * 10),
+                score: state.score + 1,
+                response: "",
+                incorrect: false,
+              });
+            } else {
+              setState({
+                ...state,
+                score: state.score - 1,
+                response: "",
+                incorrect: true,
+              });
+            }
+          }
+        }
+
+        if (state.score === 3) {
+          return <div id="win">WINNER!</div>;
+        }
+
+        return (
+          <div>
+            <div id="equation" className={state.incorrect ? "incorrect" : ""}>
+              {state.num1}+{state.num2}
+            </div>
+            <input
+              type="text"
+              onKeyPress={keyPressed}
+              onChange={updateValue}
+              value={state.response}
+              autoFocus={true}
+            />
+            <div>Score: {state.score}</div>
+          </div>
+        );
+      }
+
+      ReactDOM.render(<App />, document.querySelector("#app"));
+    </script>
+  </body>
+</html>
