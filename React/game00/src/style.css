@@ -1,0 +1,16 @@
+#app {
+  text-align: center;
+}
+
+#equation {
+  font-size: 72px;
+}
+
+.incorrect {
+  color: red;
+}
+
+#win {
+  font-size: 100px;
+  color: green;
+}
