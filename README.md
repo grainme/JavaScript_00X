@@ -1,1 +1,1 @@
-# JavaScript_00X
+# Is it javascript or typescript?
