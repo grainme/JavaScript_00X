@@ -27,7 +27,7 @@ Programming languages that allow vars to take different data types values are kn
 The JS code will never ever stop, even if we get a logical error like "hello"/2. It will give us NaN value (which indicates a computational error), and we have Infinity (like 2/0). 💻🔢
 
 # 💬 String 
-<code>
+```js
 let name = "Marouane";
 console.log("Hello, ${name}"); // is this PHP ??! NO :)
 
@@ -35,4 +35,4 @@ let test;
 alert(test); // shows "undefined"
 
 alert(typeof(name)); // string
-</code>
+```
