@@ -36,3 +36,12 @@ alert(test); // shows "undefined"
 
 alert(typeof(name)); // string
 ```
+
+# Prompt
+The visitor can type something in the prompt input field and press OK. Then we get that text in the result. Or they can cancel the input by pressing Cancel or hitting the Esc key, then we get null as the result.
+````js
+let age = prompt('How old are you?', 100);`// 100 is the default value
+let isBoss = confirm("Are you the Boss");
+alert(isBoss) // Boolean Value
+alert(`You are ${age} years old!`); // You are 100 years old!
+````
