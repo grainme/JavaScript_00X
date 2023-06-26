@@ -45,3 +45,42 @@ let isBoss = confirm("Are you the Boss");
 alert(isBoss) // Boolean Value
 alert(`You are ${age} years old!`); // You are 100 years old!
 ````
+
+# Loops
+It's the same as C syntax, only difference is that we don't specify here the type of the "iterator" :
+eg : for(let i = 0; i < 4; i++);
+
+# Function
+function name(parameter1, parameter2, ... parameterN) {
+ // body
+}
+````js
+function sayHi() {
+  alert( "Hello" );
+}
+
+// Same as the following
+
+let sayHi = function() {
+  alert( "Hello" );
+};
+
+````
+
+There is a subtle difference:
+This Works:
+````js
+sayHi("John"); // Hello, John
+
+function sayHi(name) {
+  alert( `Hello, ${name}` );
+}
+`````
+This does not work:
+````js
+sayHi("John"); // error!
+
+let sayHi = function(name) {  // (*) no magic any more
+  alert( `Hello, ${name}` );
+};
+````
