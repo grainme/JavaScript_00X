@@ -84,3 +84,20 @@ let sayHi = function(name) {  // (*) no magic any more
   alert( `Hello, ${name}` );
 };
 ````
+
+<h3>Arrays</h3>
+```js
+var names = ["Marouane", "Hamza", "Younes"];
+
+for (let i = 0; i < 3; i++) {
+console.log(names[i]);
+}
+
+console.log("--------\n");
+
+names.forEach((x) => {
+console.log(x);
+});
+
+```
+
