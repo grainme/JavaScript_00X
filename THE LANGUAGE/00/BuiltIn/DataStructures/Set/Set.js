@@ -16,7 +16,7 @@ let unique_teams = new Set(teams);
 
 console.log("This is the set : ");
 for (let team of unique_teams) {
-  console.log(team);
+  console.log(team);    
 }
 
 console.log("This is the array : ");
