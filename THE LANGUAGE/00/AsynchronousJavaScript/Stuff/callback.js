@@ -10,17 +10,31 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   ];
 
-  getPost = () => {
-    let postList = document.createComment("ol");
-    let output = "";
-    posts.forEach((post) => {
-      output += `<li><h2>${post.title}</h2><p>${post.body}</p></li>`;
-      console.log(output);
+  const post3 = {
+    title: "Ternary Search",
+    body: "I don't know what does ternary search means!",
+  };
+
+  // Fetch Posts from posts List!
+  const getPost = () => {
+    setTimeout(() => {
+      let postList = document.createElement("ol");
+      let output = "";
+      posts.forEach((post) => {
+        output += `<li><h2>${post.title}</h2><p>${post.body}</p></li>`;
+      });
+      postList.innerHTML = output;
+      document.body.appendChild(postList);
+    }, 1000);
+  };
+
+  // Add post to Posts List
+  const createPost = (post) => {
+    setTimeout(() => {
+      posts.push(post), 1000;
     });
-    postList = output;
-    let body = document.querySelector("body");
-    body.appendChild(postList);
   };
 
   getPost();
+  createPost();
 });
