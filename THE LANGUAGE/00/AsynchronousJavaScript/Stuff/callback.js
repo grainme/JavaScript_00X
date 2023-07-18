@@ -1,22 +1,26 @@
-const posts = [
-  {
-    title: "Binary Search",
-    body: "A logarithmic method to lookup things in a sorted array",
-  },
-  {
-    title: "Linear Search",
-    body: "A Linear method to lookup things in an array",
-  },
-];
+document.addEventListener("DOMContentLoaded", function () {
+  const posts = [
+    {
+      title: "Binary Search",
+      body: "A logarithmic method to lookup things in a sorted array",
+    },
+    {
+      title: "Linear Search",
+      body: "A Linear method to lookup things in an array",
+    },
+  ];
 
-getPosts = () => {
-  setTimeout(() => {
+  getPost = () => {
+    let postList = document.createComment("ol");
     let output = "";
-    posts.forEach((post, index) => {
-      output += `<li>${post.title} : ${post.body}</li>`;
+    posts.forEach((post) => {
+      output += `<li><h2>${post.title}</h2><p>${post.body}</p></li>`;
+      console.log(output);
     });
-    document.body.innerHTML = output;
-  }, 1000);
-};
+    postList = output;
+    let body = document.querySelector("body");
+    body.appendChild(postList);
+  };
 
-getPosts();
+  getPost();
+});
