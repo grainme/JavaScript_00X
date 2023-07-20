@@ -29,12 +29,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 1000);
   }
 
-  function createPost(newPost, callback) {
-    setTimeout(() => {
-      posts.push(newPost);
-      callback();
-    }, 2000);
+  function createPost(newPost) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        posts.push(newPost);
+        const error = true;
+        if (error) {
+          resolve();
+        } else {
+          reject("error : something went wrong!");
+        }
+      }, 2000);
+    });
   }
 
-  createPost(post3, getPost);
+  createPost(post3)
+    .then(getPost)
+    .catch((err) => {
+      console.log(err);
+    });
 });
