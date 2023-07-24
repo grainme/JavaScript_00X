@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Operations } from "./Operations";
-import { Results } from "./Results";
-import { Quote } from "./Quote";
+import { Operations } from "./components/Operations";
+import { Results } from "./components/Results";
+import { Quote } from "./components/Quote";
 import Axios from "axios";
-import "./todo.css";
+import "./styles/todo.css";
 
 function App() {
   const [taskList, setTaskList] = useState([]);
