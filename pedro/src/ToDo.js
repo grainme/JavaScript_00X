@@ -31,9 +31,7 @@ export function App() {
   const updateTask = (id) => {
     setTaskList(
       taskList.map((task) => {
-        if(task.id === id){
-          
-        }
+        return task.id === id ? { ...task, completed: true } : task;
       })
     );
   };
@@ -57,6 +55,7 @@ export function App() {
         {taskList.map((task, key) => {
           return (
             <Task
+              key={key}
               updateTask={updateTask}
               removeTask={removeTask}
               name={task.name}

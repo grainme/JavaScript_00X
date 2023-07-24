@@ -1,0 +1,96 @@
+/* Reset default margin and padding */
+body,
+h1,
+ul,
+li,
+button {
+  margin: 0;
+  padding: 0;
+}
+
+/* Main container styles */
+.App {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header styles */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* AddTask section styles */
+.AddTask {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.AddTask input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.AddTask button {
+  margin-left: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.AddTask button:hover {
+  background-color: #0056b3;
+}
+
+/* ShowTask section styles */
+.ShowTask {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.task:last-child {
+  border-bottom: none;
+}
+
+.task li {
+  flex: 1;
+  padding-left: 5px;
+  list-style: none;
+}
+
+.task button {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #ff4136;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task button:hover {
+  background-color: #e0000a;
+}
+
+.taskOp {
+  display: flex;
+  gap: 1rem;
+}

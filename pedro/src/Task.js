@@ -1,8 +1,11 @@
 export const Task = (props) => {
   return (
-    <div className="noBreak">
+    <div
+      className="noBreak"
+      style={{ backgroundColor: props.completed ? "green" : "" }}
+    >
       <h1>{props.name}</h1>
-      <button
+      <button 
         onClick={() => {
           props.removeTask(props.id);
         }}
@@ -11,7 +14,6 @@ export const Task = (props) => {
       </button>
       <button
         onClick={() => {
-          props.completed = true;
           props.updateTask(props.id);
         }}
       >
