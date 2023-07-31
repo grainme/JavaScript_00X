@@ -5,7 +5,7 @@ export default {
     extend: {
       fontFamily: {
         clash: ["Clash Display", "sans-serif"],
-        poppins: ["Poppins", "sans-serif"],
+        grotesk: ["Clash Grotesk", "sans-serif"],
       },
     },
   },
