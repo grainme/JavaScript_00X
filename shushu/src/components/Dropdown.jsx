@@ -61,7 +61,7 @@ export function Dropdown() {
         >
           <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
             <div className="font-medium">Indie Developer</div>
-            <div className="truncate">saitama@apple.io</div>
+            <div className="truncate">saitama@grainme.io</div>
           </div>
           <ul
             className="py-2 text-sm text-gray-700 dark:text-gray-200"

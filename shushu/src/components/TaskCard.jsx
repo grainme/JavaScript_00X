@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Modal } from "react-modal";
 
 function TaskCard(props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
@@ -83,7 +84,7 @@ function TaskCard(props) {
       {...attributes}
       {...listeners}
       onClick={toggleEditMode}
-      className="bg-white p-2.5 h-[100px] min-h-[100px] items-center flex text-left rounded-xl cursor-grab relative task"
+      className="bg-white p-2.5 items-center flex text-left rounded-xl cursor-grab relative task"
       onMouseEnter={() => {
         setMouseIsOver(true);
       }}
@@ -91,36 +92,48 @@ function TaskCard(props) {
         setMouseIsOver(false);
       }}
     >
-      <div className="flex flex-col gap-1 pl-2">
+      {mouseIsOver && (
+        <div>
+          <button
+            onClick={() => {
+              props.updateTask(props.task.id);
+            }}
+            className="stroke-white hover:bg-amber-500 hover:text-white bg-columnBackgroundColor p-2 rounded opacity-60 hover:opacity-100"
+          >
+            <Edit className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => {
+              props.deleteTask(props.task.id);
+            }}
+            className="stroke-white hover:bg-red-400 hover:text-white bg-columnBackgroundColor p-2 rounded opacity-60 hover:opacity-100"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col gap-1 pl-2 w-[300px] flex-grow">
         {props.task.priority && (
           <span
-            className={`h-7 w-12 pl-2 pt-1 rounded-lg text-[14px] font-medium ${
-              props.task.priority === "low"
-                ? "bg-[#D58C48]"
-                : props.task.priority === "high"
-                ? "bg-red-500"
-                : "bg-[#b3f7cf] text-[#67B266]"
+            className={`h-6 w-12 p-auto pl-2 pt-[2px] rounded-lg text-[14px] font-medium ${
+              props.task.priority === "Low"
+                ? "bg-[#ffd6b0] text-[#c48a53]"
+                : props.task.priority === "High"
+                ? "bg-red-100 text-[#da6565]"
+                : props.task.priority === "Done"
+                ? "bg-[#ceffe2] text-[#439b66]"
+                : null
             }`}
           >
             {props.task.priority}
           </span>
         )}
         {props.task.title && <h1>{props.task.title}</h1>}
-        <p className="my-auto h-[90%] overflow-y overflow-x-hidden whitespace-pre-wrap w-[274px] text-zinc-500 text-xs font-normal">
+
+        <p className="overflow-y-auto overflow-x-hidden w-[280px] whitespace-pre-wrap text-zinc-500 text-xs font-normal">
           {props.task.content}
         </p>
       </div>
-
-      {mouseIsOver && (
-        <button
-          onClick={() => {
-            props.deleteTask(props.task.id);
-          }}
-          className="stroke-white absolute right-4 top-1/2 -translate-y-1/2 bg-columnBackgroundColor p-2 rounded opacity-60 hover:opacity-100"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
-      )}
     </div>
   );
 }

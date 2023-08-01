@@ -27,7 +27,7 @@ function App() {
           <Title />
           <Avatars />
         </div>
-        <KanbanBoard/>
+        <KanbanBoard />
       </div>
     </div>
   );

@@ -33,16 +33,14 @@ const defaultTasks = [
     content: "List admin APIs for dashboard",
     title: "Dashboard API Listing",
     priority: "Low",
-    image: "https://source.unsplash.com/random/800x600", // Replace with your Unsplash image URL
   },
   {
     id: "2",
     columnId: "todo",
     content:
-      "Develop user registration functionality withdklsqjdslkjdlksqjdskqljdlksqjdslkqjdsqkjdslkjdsqkjdsqljsdlkqjdsqlk OTP delivered on SMS after email confirmation and phone number confirmation",
+      "Develop user registration functionality OTP delivered on SMS after email confirmation and phone number confirmation",
     title: "User Registration with OTP",
     priority: "High",
-    image: "https://source.unsplash.com/random/800x600", // Replace with your Unsplash image URL
   },
   {
     id: "3",
@@ -50,7 +48,6 @@ const defaultTasks = [
     content: "Conduct security testing",
     title: "Security Testing",
     priority: "Low",
-    image: "https://source.unsplash.com/random/800x600", // Replace with your Unsplash image URL
   },
   {
     id: "4",
@@ -58,7 +55,6 @@ const defaultTasks = [
     content: "Analyze competitors",
     title: "Competitor Analysis",
     priority: "Low",
-    image: "https://source.unsplash.com/random/800x600", // Replace with your Unsplash image URL
   },
   {
     id: "5",
@@ -66,7 +62,6 @@ const defaultTasks = [
     content: "Create UI kit documentation",
     title: "UI Kit Documentation",
     priority: "Done",
-    image: "https://source.unsplash.com/random/800x600", // Replace with your Unsplash image URL
   },
   {
     id: "6",
@@ -74,7 +69,6 @@ const defaultTasks = [
     content: "Dev meeting",
     title: "Development Meeting",
     priority: "High",
-    image: "https://source.unsplash.com/random/800x600", // Replace with your Unsplash image URL
   },
   {
     id: "7",
@@ -82,7 +76,6 @@ const defaultTasks = [
     content: "Deliver dashboard prototype",
     title: "Dashboard Prototype Delivery",
     priority: "Done",
-    image: "https://source.unsplash.com/random/800x600", // Replace with your Unsplash image URL
   },
 ];
 
