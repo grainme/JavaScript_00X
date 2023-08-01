@@ -4,6 +4,7 @@ import { Icons } from "./components/Icons";
 import { Dropdown } from "./components/Dropdown";
 import { Title } from "./components/Title";
 import { Avatars } from "./components/Avatars";
+import { KanbanBoard } from "./components/Kanban";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Title />
           <Avatars />
         </div>
+        <KanbanBoard/>
       </div>
     </div>
   );
