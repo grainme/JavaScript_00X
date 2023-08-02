@@ -8,7 +8,7 @@ import { KanbanBoard } from "./components/Kanban";
 
 function App() {
   return (
-    <div className=" flex flex-row bg-[#FFFEFB]">
+    <div className="font-grotesk flex flex-row bg-[#FFFEFB]">
       <div>
         <Sidebar />
       </div>

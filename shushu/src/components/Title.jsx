@@ -20,14 +20,14 @@ export function Title() {
   };
 
   return (
-    <div className="flex flex-row m-9 items-center space-x-8">
+    <div className="flex flex-row m-9 font-grotesk font-semibold items-center space-x-8">
       {isEditing ? (
         <input
           type="text"
           value={title}
           onChange={handleInputChange}
           onKeyPress={handleInputKeyPress}
-          className="text-[40px] font-[500] bg-transparent border-b-2 border-indigo-600 focus:outline-none"
+          className="text-[40px] font-[500] bg-transparent border-b-2  border-indigo-600 focus:outline-none"
         />
       ) : (
         <h1 className="text-[40px] font-[500]">{title}</h1>

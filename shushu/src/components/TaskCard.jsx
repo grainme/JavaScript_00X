@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import { Trash2, Edit } from "lucide-react";
+import { Trash2, Edit, Tag, CircleDot, TrendingUp, Users } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import ReactModal from "react-modal";
@@ -14,20 +14,24 @@ function TaskCard(props) {
 
   const customModalStyle = {
     content: {
-      width: "500px",
-      height: "300px",
+      width: "550px",
+      height: "650px",
       margin: "auto",
+      padding: "2rem",
       borderRadius: "10px",
       boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
       display: "flex",
       flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "space-around",
+      alignItems: "start",
+      gap: "1.2rem",
+      /* Marouane, here you can adjust the space between components! */
+      // justifyContent: "space-around",
       outline: "none",
-      backgroundColor: "#F5F5F5",
+      backgroundColor: "white",
+      // backgroundColor: "#F5F5F5",
     },
     overlay: {
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      backgroundColor: "rgba(0, 0, 0, 0.45)",
     },
   };
 
@@ -159,14 +163,77 @@ function TaskCard(props) {
         ariaHideApp={false}
         style={customModalStyle}
       >
-        <h1 className="text-2xl font-semibold mb-4">Edit Here!</h1>
+        {/* Title */}
+        <h1 className="text-[28px] font-medium mb-4 mt-2">
+          {props.task.title}
+        </h1>
+
+        {/* Labels Div*/}
+        <div className="flex flex-col gap-2">
+          <div>
+            <div className="flex flex-row ">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  text-[#777777]">
+                <Tag className="h-[14px] w-[14px]" />
+                Label
+              </div>
+              <div className="text-[14px] ">{props.task.title}</div>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex flex-row ">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  text-[#777777]">
+                <Users className="h-[14px] w-[14px]" />
+                Assignee
+              </div>
+              <div className="text-[14px] ">To Be Done!</div>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex flex-row ">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  text-[#777777]">
+                <TrendingUp className="h-[14px] w-[14px]" />
+                Due Date
+              </div>
+              <div className="text-[14px] ">Finito Binito</div>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex flex-row ">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  text-[#777777]">
+                <CircleDot className="h-[14px] w-[14px]" />
+                Priority
+              </div>
+              <div className="text-[14px] ">{props.task.title}</div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-row gap-5 mt-2 text-[15px] font-medium text-[#777777] ">
+          <div
+            className="hover:text-[#7c63e8] cursor-pointer"
+            onClick={() => {}}
+          >
+            Description
+          </div>
+          <div
+            className="hover:text-[#7c63e8] cursor-pointer  "
+            onClick={() => {}}
+          >
+            Comments
+          </div>
+        </div>
+        {/* TextArea */}
         <textarea
-          className="h-[70%] w-full text-[17px] resize-none border rounded bg-white text-black focus:outline-none p-2"
+          className="h-[17%] w-full resize-none rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] focus:outline-none "
           value={editedContent}
           autoFocus
           placeholder="Task content here"
           onChange={handleEditContent}
         />
+
+        {/* Operations Buttons */}
         <div className="flex justify-between mt-4 gap-4">
           <button
             onClick={cancelEdit}
