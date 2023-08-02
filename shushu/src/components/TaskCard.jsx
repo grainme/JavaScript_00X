@@ -4,6 +4,9 @@ import { Trash2, Edit, Tag, CircleDot, TrendingUp, Users } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import ReactModal from "react-modal";
+import profile from "../assets/mriwina.jpg";
+import { PriorityCard } from "./PriorityCard";
+import { Title } from "./Title";
 
 function TaskCard(props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
@@ -11,6 +14,8 @@ function TaskCard(props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedContent, setEditedContent] = useState(props.task.content);
   const [lastTrack, setLastTrack] = useState(editedContent);
+  const [textAreaType, setTextAreaType] = useState("description");
+  const [comment, setComment] = useState("");
 
   const customModalStyle = {
     content: {
@@ -86,6 +91,10 @@ function TaskCard(props) {
     closeModal();
   }
 
+  function handleComment(event) {
+    setComment(event.target.value);
+  }
+
   if (isDragging) {
     return (
       <div
@@ -133,21 +142,7 @@ function TaskCard(props) {
           </div>
         )}
         <div className="flex flex-col gap-1 pl-2 w-[300px] flex-grow">
-          {props.task.priority && (
-            <span
-              className={`h-6 w-12 p-auto pl-2 pt-[2px] rounded-lg text-[14px] font-medium ${
-                props.task.priority === "Low"
-                  ? "bg-[#ffd6b0] text-[#c48a53]"
-                  : props.task.priority === "High"
-                  ? "bg-red-100 text-[#da6565]"
-                  : props.task.priority === "Done"
-                  ? "bg-[#ceffe2] text-[#439b66]"
-                  : null
-              }`}
-            >
-              {props.task.priority}
-            </span>
-          )}
+          <PriorityCard priority={props.task.priority} />
           {props.task.title && <h1>{props.task.title}</h1>}
 
           <p className="overflow-y-auto overflow-x-hidden w-[280px] whitespace-pre-wrap text-zinc-500 text-xs font-normal">
@@ -196,7 +191,12 @@ function TaskCard(props) {
                 <TrendingUp className="h-[14px] w-[14px]" />
                 Due Date
               </div>
-              <div className="text-[14px] ">Finito Binito</div>
+              <Title
+                titleStyle=""
+                classNameInput=" bg-transparent border-b-2  border-indigo-600 focus:outline-none"
+                inputEdit="p-1 w-6 h-6 bg-indigo-200 text-indigo-600 rounded-lg cursor-pointer"
+                editIcon="false"
+              />
             </div>
           </div>
 
@@ -206,48 +206,79 @@ function TaskCard(props) {
                 <CircleDot className="h-[14px] w-[14px]" />
                 Priority
               </div>
-              <div className="text-[14px] ">{props.task.title}</div>
+              <PriorityCard priority={props.task.priority} />
             </div>
           </div>
         </div>
         <div className="flex flex-row gap-5 mt-2 text-[15px] font-medium text-[#777777] ">
           <div
             className="hover:text-[#7c63e8] cursor-pointer"
-            onClick={() => {}}
+            onClick={() => {
+              setTextAreaType("description");
+            }}
           >
             Description
           </div>
           <div
-            className="hover:text-[#7c63e8] cursor-pointer  "
-            onClick={() => {}}
+            className="hover:text-[#7c63e8] cursor-pointer  hover:border-b-2"
+            onClick={() => {
+              setTextAreaType("comment");
+            }}
           >
             Comments
           </div>
         </div>
         {/* TextArea */}
-        <textarea
-          className="h-[17%] w-full resize-none rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] focus:outline-none "
-          value={editedContent}
-          autoFocus
-          placeholder="Task content here"
-          onChange={handleEditContent}
-        />
-
-        {/* Operations Buttons */}
-        <div className="flex justify-between mt-4 gap-4">
-          <button
-            onClick={cancelEdit}
-            className="px-4 py-2 rounded  bg-red-100 hover:bg-red-200 text-[#da6565]"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={saveChanges}
-            className="px-4 py-2 rounded bg-[#ceffe2] text-[#439b66] hover:bg-[#b5edcb]"
-          >
-            Save Changes
-          </button>
+        {textAreaType === "description" ? (
+          <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] flex flex-col ">
+            <textarea
+              className="bg-transparent resize-none focus:outline-none"
+              value={editedContent}
+              autoFocus
+              placeholder="Task content here"
+              onChange={handleEditContent}
+            />
+          </div>
+        ) : (
+          <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] flex flex-col justify-end">
+            <textarea
+              className="bg-transparent resize-none focus:outline-none"
+              autoFocus
+              value={comment}
+              placeholder="Commentate here :)"
+              onChange={handleComment}
+            />
+            <button className="px-4 py-2 rounded bg-purple-200 hover:bg-purple-300 text-[#7165da] mt-2 ml-auto">
+              Publish
+            </button>
+          </div>
+        )}
+        <div className="h-[10rem] w-full rounded-xl flex flex-col gap-4  p-3 text-[14.8px] text-[#2d2d2d] overflow-auto">
+          <div className="flex flex-col gap-2 ">
+            <div className="flex flex-row gap-3 items-center text-[15px] font-medium">
+              <img src={profile} className="w-7 h-7 rounded-full"></img>
+              <div>Saitam Kun</div>
+            </div>
+            <div className="text-[#777777] text-[14px]">
+              <p>We need to finish up this task asap!</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 ">
+            <div className="flex flex-row gap-3 items-center text-[15px] font-medium">
+              <img src={profile} className="w-7 h-7 rounded-full"></img>
+              <div>Saitam Kun</div>
+            </div>
+            <div className="text-[#777777] text-[14px]">
+              <p>We need to finish up this task asap!</p>
+            </div>
+          </div>
         </div>
+        <button
+          onClick={saveChanges}
+          className="px-4 py-2 rounded bg-[#ceffe2] text-[#439b66] hover:bg-[#b5edcb] mt-2 ml-auto"
+        >
+          Save
+        </button>
       </ReactModal>
     </>
   );
