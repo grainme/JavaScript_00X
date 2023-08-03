@@ -4,7 +4,7 @@ import { Edit3 } from "lucide-react";
 
 export function Title(props) {
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState("Work in progress!");
+  const [title, setTitle] = useState(props.default);
 
   const handleEditClick = () => {
     setIsEditing(!isEditing);
@@ -31,9 +31,9 @@ export function Title(props) {
           className={props.classNameInput}
         />
       ) : (
-        <h1 onClick={props.editIcon !== "true" ? handleEditClick : () => {}}>
+        <div onClick={props.editIcon !== "true" ? handleEditClick : () => {}}>
           {title}
-        </h1>
+        </div>
       )}
       {props.editIcon === "true" && (
         <Edit3 className={props.inputEdit} onClick={handleEditClick} />

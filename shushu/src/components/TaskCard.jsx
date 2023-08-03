@@ -95,6 +95,13 @@ function TaskCard(props) {
     setComment(event.target.value);
   }
 
+  function timeNow() {
+    const current = new Date();
+    return `${current.getDate()}/${
+      current.getMonth() + 1
+    }/${current.getFullYear()}`;
+  }
+
   if (isDragging) {
     return (
       <div
@@ -192,7 +199,8 @@ function TaskCard(props) {
                 Due Date
               </div>
               <Title
-                titleStyle=""
+                default={timeNow}
+                titleStyle="text-[14px] "
                 classNameInput=" bg-transparent border-b-2  border-indigo-600 focus:outline-none"
                 inputEdit="p-1 w-6 h-6 bg-indigo-200 text-indigo-600 rounded-lg cursor-pointer"
                 editIcon="false"
@@ -212,7 +220,7 @@ function TaskCard(props) {
         </div>
         <div className="flex flex-row gap-5 mt-2 text-[15px] font-medium text-[#777777] ">
           <div
-            className="hover:text-[#7c63e8] cursor-pointer"
+            className="hover:text-[#7c63e8] cursor-pointer hover:border-b-2 border-[#7c63e8]"
             onClick={() => {
               setTextAreaType("description");
             }}
@@ -220,7 +228,7 @@ function TaskCard(props) {
             Description
           </div>
           <div
-            className="hover:text-[#7c63e8] cursor-pointer  hover:border-b-2"
+            className="hover:text-[#7c63e8] cursor-pointer hover:border-b-2 border-[#7c63e8]"
             onClick={() => {
               setTextAreaType("comment");
             }}
@@ -240,7 +248,7 @@ function TaskCard(props) {
             />
           </div>
         ) : (
-          <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] flex flex-col justify-end">
+          <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] flex flex-col ">
             <textarea
               className="bg-transparent resize-none focus:outline-none"
               autoFocus
@@ -248,9 +256,6 @@ function TaskCard(props) {
               placeholder="Commentate here :)"
               onChange={handleComment}
             />
-            <button className="px-4 py-2 rounded bg-purple-200 hover:bg-purple-300 text-[#7165da] mt-2 ml-auto">
-              Publish
-            </button>
           </div>
         )}
         <div className="h-[10rem] w-full rounded-xl flex flex-col gap-4  p-3 text-[14.8px] text-[#2d2d2d] overflow-auto">
@@ -273,12 +278,17 @@ function TaskCard(props) {
             </div>
           </div>
         </div>
-        <button
-          onClick={saveChanges}
-          className="px-4 py-2 rounded bg-[#ceffe2] text-[#439b66] hover:bg-[#b5edcb] mt-2 ml-auto"
-        >
-          Save
-        </button>
+        <div className="mt-2 ml-auto flex flex-row gap-3 m-auto">
+          <button
+            onClick={saveChanges}
+            className="px-4 py-2 rounded bg-[#ceffe2] text-[#439b66] hover:bg-[#b5edcb] "
+          >
+            Edit
+          </button>
+          <button className="px-4 py-2 rounded bg-purple-200 hover:bg-purple-300 text-[#7165da] ">
+            Comment
+          </button>
+        </div>
       </ReactModal>
     </>
   );
