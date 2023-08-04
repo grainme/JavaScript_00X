@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
-import { Sidebar } from "./SideBar";
-import { SearchBar } from "./SearchBar";
-import { Icons } from "./Icons";
-import { Dropdown } from "./Dropdown";
-import { Title } from "./Title";
-import { Avatars } from "./Avatars";
-import { KanbanBoard } from "./Kanban";
+import { Sidebar } from "../components/SideBar";
+import { SearchBar } from "../components/SearchBar";
+import { Icons } from "../components/Icons";
+import { Dropdown } from "../components/Dropdown";
+import { Title } from "../components/TitleInput";
+import { Avatars } from "../components/Avatars";
+import { KanbanBoard } from "../components/Kanban";
 import { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
+import { supabase } from "../components/supabaseClient";
 import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {

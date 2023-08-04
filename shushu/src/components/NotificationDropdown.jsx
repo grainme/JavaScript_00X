@@ -1,17 +1,36 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import profile from "../assets/mriwina.jpg";
 
 export const NotificationDropdown = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
 
+  const handleOutsideClick = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showDropdown) {
+      document.addEventListener("click", handleOutsideClick);
+    } else {
+      document.removeEventListener("click", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, [showDropdown]);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         id="dropdownNotificationButton"
         onClick={toggleDropdown}

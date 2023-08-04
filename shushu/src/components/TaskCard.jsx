@@ -6,7 +6,7 @@ import { CSS } from "@dnd-kit/utilities";
 import ReactModal from "react-modal";
 import profile from "../assets/mriwina.jpg";
 import { PriorityCard } from "./PriorityCard";
-import { Title } from "./Title";
+import { Title } from "./TitleInput";
 
 function TaskCard(props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);

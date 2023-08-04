@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { supabase } from "./supabaseClient";
+import { supabase } from "../components/supabaseClient";
 // import image from "../assets/login.jpg";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -8,11 +9,33 @@ import { useEffect } from "react";
 export function Login() {
   const navigate = useNavigate();
 
+  // This is just testing Supabase Fetching Data from Tables
+  useEffect(() => {
+    const getTasks = async () => {
+      try {
+        let { data: tasks, error } = await supabase
+          .from("tasks")
+          .select("title");
+        if (error) {
+          throw error;
+        }
+        return tasks;
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        return null;
+      }
+    };
+
+    (async () => {
+      const tasks = await getTasks();
+      console.log(tasks);
+    })();
+  }, []);
+
   useEffect(() => {
     supabase.auth.onAuthStateChange(async (event) => {
       if (event === "SIGNED_IN") {
-        // Corrected event value
-        navigate("/work"); // Use lowercase "work" for consistency with the route path
+        navigate("/work");
       } else {
         navigate("/");
       }

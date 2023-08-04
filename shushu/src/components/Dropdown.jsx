@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import profile from "../assets/mriwina.jpg";
 import { supabase } from "./supabaseClient";
 import { useNavigate } from "react-router-dom";
@@ -12,15 +12,35 @@ export function Dropdown() {
     });
     navigate("/");
   }
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const profileRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const handleOutsideClick = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isDropdownOpen) {
+      document.addEventListener("click", handleOutsideClick);
+    } else {
+      document.removeEventListener("click", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, [isDropdownOpen]);
+
   return (
-    <div className="m-4">
+    <div className="m-4" ref={dropdownRef}>
       <button
         id="dropdownAvatarNameButton"
         data-dropdown-toggle="dropdownAvatarName"
