@@ -1,7 +1,17 @@
 import { useState, useRef } from "react";
 import profile from "../assets/mriwina.jpg";
+import { supabase } from "./supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 export function Dropdown() {
+  const navigate = useNavigate();
+
+  async function signOut() {
+    const { error } = await supabase.auth.signOut().catch(() => {
+      console.log(error);
+    });
+    navigate("/");
+  }
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const profileRef = useRef(null);
 
@@ -14,35 +24,13 @@ export function Dropdown() {
       <button
         id="dropdownAvatarNameButton"
         data-dropdown-toggle="dropdownAvatarName"
-        className="flex items-center text-sm font-medium text-gray-900 rounded-xl hover:text-blue-500  md:mr-0  "
+        className="flex items-center text-sm font-medium text-gray-900 rounded-xl hover:text-purple-200  md:mr-0  "
         type="button"
         onClick={toggleDropdown}
         ref={profileRef} // Add a ref to the profile image
       >
         <span className="sr-only">Open user menu</span>
-        <img
-          className="w-8 h-8 mr-2 rounded-full"
-          src={profile}
-          alt="user photo"
-        />
-        SAITAMA KUN
-        <svg
-          className={`w-2.5 h-2.5 ml-2.5 ${
-            isDropdownOpen ? "-rotate-180" : ""
-          }`}
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 10 6"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="m1 1 4 4 4-4"
-          />
-        </svg>
+        <img className="w-8 h-8 rounded-full" src={profile} alt="user photo" />
       </button>
 
       {/* Dropdown menu */}
@@ -92,13 +80,10 @@ export function Dropdown() {
               </a>
             </li>
           </ul>
-          <div className="py-2">
-            <a
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-            >
+          <div onClick={signOut} className="py-2 cursor-pointer ">
+            <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
               Log out
-            </a>
+            </div>
           </div>
         </div>
       )}
