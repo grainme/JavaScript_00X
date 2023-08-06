@@ -1,46 +1,41 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "../components/supabaseClient";
-// import image from "../assets/login.jpg";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export function Login() {
+  const [userId, setUserId] = useState("");
   const navigate = useNavigate();
-
-  // This is just testing Supabase Fetching Data from Tables
-  useEffect(() => {
-    const getTasks = async () => {
-      try {
-        let { data: tasks, error } = await supabase
-          .from("tasks")
-          .select("title");
-        if (error) {
-          throw error;
-        }
-        return tasks;
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-        return null;
-      }
-    };
-
-    (async () => {
-      const tasks = await getTasks();
-      console.log(tasks);
-    })();
-  }, []);
 
   useEffect(() => {
     supabase.auth.onAuthStateChange(async (event) => {
       if (event === "SIGNED_IN") {
-        navigate("/work");
+        // Fetch user data
+        const user = await supabase.auth.getUser();
+        if (user) {
+          setUserId(user.data?.user.id);
+        }
+
+        // Check if user has completed profile information
+        const { data } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", user.data?.user.id)
+          .single();
+
+        if (data && data.username) {
+          // User has profile info, navigate to work page
+          navigate("/work");
+        } else {
+          // User needs to complete profile info, navigate to profile completion page
+          navigate("/Setup");
+        }
       } else {
         navigate("/");
       }
     });
-  }, []);
+  }, [userId]);
 
   return (
     <div className="flex w-screen h-screen overflow-auto">

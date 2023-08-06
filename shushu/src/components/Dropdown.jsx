@@ -5,6 +5,16 @@ import { useNavigate } from "react-router-dom";
 
 export function Dropdown() {
   const navigate = useNavigate();
+  const [userMail, setUserMail] = useState("");
+
+  useEffect(() => {
+    const getUserData = async () => {
+      await supabase.auth.getUser().then((value) => {
+        setUserMail(value.data?.user.email);
+      });
+    };
+    getUserData();
+  }, [userMail]);
 
   async function signOut() {
     const { error } = await supabase.auth.signOut().catch(() => {
@@ -67,9 +77,8 @@ export function Dropdown() {
               20,
           }}
         >
-          <div className="px-4 py-3 text-sm text-gray-900 dark:text-white">
+          <div className="px-4 py-3 text-sm  text-gray-900 dark:text-white">
             <div className="font-medium">Indie Developer</div>
-            <div className="truncate">saitama@grainme.io</div>
           </div>
           <ul
             className="py-2 text-sm text-gray-700 dark:text-gray-200"

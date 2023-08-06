@@ -6,20 +6,8 @@ import { Dropdown } from "../components/Dropdown";
 import { Title } from "../components/TitleInput";
 import { Avatars } from "../components/Avatars";
 import { KanbanBoard } from "../components/Kanban";
-import { useEffect, useState } from "react";
-import { supabase } from "../components/supabaseClient";
-import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
-  useEffect(() => {
-    const getUserData = async () => {
-      await supabase.auth.getUser().then((value) => {
-        console.log(value.data?.user);
-      });
-    };
-
-    getUserData();
-  }, []);
   return (
     <div className="font-grotesk flex flex-row bg-[#FFFEFB]">
       <div>
@@ -46,6 +34,7 @@ export function Dashboard() {
           />
           <Avatars />
         </div>
+
         <KanbanBoard />
       </div>
     </div>

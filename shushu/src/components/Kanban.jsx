@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import ColumnContainer from "./ColumnContainer";
 import {
   DndContext,
@@ -10,6 +10,7 @@ import {
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "./TaskCard";
+import { supabase } from "./supabaseClient";
 
 const defaultCols = [
   {
@@ -26,68 +27,64 @@ const defaultCols = [
   },
 ];
 
-const defaultTasks = [
-  {
-    id: "1",
-    columnId: "todo",
-    content: "List admin APIs for dashboard",
-    title: "Dashboard API Listing",
-    priority: "Low",
-  },
-  {
-    id: "2",
-    columnId: "todo",
-    content:
-      "Develop user registration functionality OTP delivered on SMS after email confirmation and phone number confirmation",
-    title: "User Registration with OTP",
-    priority: "High",
-  },
-  {
-    id: "3",
-    columnId: "doing",
-    content: "Conduct security testing",
-    title: "Security Testing",
-    priority: "Low",
-  },
-  {
-    id: "4",
-    columnId: "doing",
-    content: "Analyze competitors",
-    title: "Competitor Analysis",
-    priority: "Low",
-  },
-  {
-    id: "5",
-    columnId: "done",
-    content: "Create UI kit documentation",
-    title: "UI Kit Documentation",
-    priority: "Done",
-  },
-  {
-    id: "6",
-    columnId: "done",
-    content: "Dev meeting",
-    title: "Development Meeting",
-    priority: "High",
-  },
-  {
-    id: "7",
-    columnId: "done",
-    content: "Deliver dashboard prototype",
-    title: "Dashboard Prototype Delivery",
-    priority: "Done",
-  },
-];
-
 export function KanbanBoard() {
   const [columns, setColumns] = useState(defaultCols);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
-  const [tasks, setTasks] = useState(defaultTasks);
+  const [tasks, setTasks] = useState([]);
 
   const [activeColumn, setActiveColumn] = useState(null);
 
   const [activeTask, setActiveTask] = useState(null);
+
+  // Supabase Backend Stuff
+  const [userId, setUserId] = useState(null);
+  const [userMail, setUserMail] = useState("");
+  const [tasksUser, setTasksUser] = useState([]);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      await supabase.auth.getUser().then((value) => {
+        setUserId(value.data?.user.id);
+        setUserMail(value.data?.user.email);
+      });
+    };
+    getUserData();
+  }, [userId]);
+
+  // This is just testing Supabase Fetching Data from Tables
+  useEffect(() => {
+    const getTasksForUser = async (userUID) => {
+      try {
+        const { data, error } = await supabase
+          .from("tasks")
+          .select()
+          .eq("user_id", userUID);
+        const { dataFile, errorFile } = await supabase.storage.getBucket(
+          "avatars"
+        );
+
+        console.log(dataFile);
+        if (error) {
+          throw error;
+        }
+        return data;
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        return null;
+      }
+    };
+
+    (async () => {
+      const userUID = userId;
+      if (userUID) {
+        const tasks = await getTasksForUser(userUID);
+        console.log(tasks);
+        console.log(userId);
+        setTasksUser(tasks);
+      }
+    })();
+  }, [userId]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -96,6 +93,17 @@ export function KanbanBoard() {
       },
     })
   );
+
+  useEffect(() => {
+    const newTasks = tasksUser.map((task) => ({
+      id: task.id,
+      columnId: task.status,
+      content: task.description,
+      title: task.title,
+      priority: task.priority,
+    }));
+    setTasks(newTasks);
+  }, [tasksUser]);
 
   return (
     <div
