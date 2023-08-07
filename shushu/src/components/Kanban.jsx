@@ -1,4 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo, useState, useEffect } from "react";
+import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import ColumnContainer from "./ColumnContainer";
 import {
   DndContext,
@@ -10,7 +12,6 @@ import {
 import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import TaskCard from "./TaskCard";
-import { supabase } from "./supabaseClient";
 
 const defaultCols = [
   {
@@ -28,29 +29,17 @@ const defaultCols = [
 ];
 
 export function KanbanBoard() {
+  const supabase = useSupabaseClient();
+  const user = useUser();
   const [columns, setColumns] = useState(defaultCols);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
-
   const [tasks, setTasks] = useState([]);
-
   const [activeColumn, setActiveColumn] = useState(null);
-
   const [activeTask, setActiveTask] = useState(null);
 
+  console.log(user?.id);
   // Supabase Backend Stuff
-  const [userId, setUserId] = useState(null);
-  const [userMail, setUserMail] = useState("");
   const [tasksUser, setTasksUser] = useState([]);
-
-  useEffect(() => {
-    const getUserData = async () => {
-      await supabase.auth.getUser().then((value) => {
-        setUserId(value.data?.user.id);
-        setUserMail(value.data?.user.email);
-      });
-    };
-    getUserData();
-  }, [userId]);
 
   // This is just testing Supabase Fetching Data from Tables
   useEffect(() => {
@@ -60,11 +49,6 @@ export function KanbanBoard() {
           .from("tasks")
           .select()
           .eq("user_id", userUID);
-        const { dataFile, errorFile } = await supabase.storage.getBucket(
-          "avatars"
-        );
-
-        console.log(dataFile);
         if (error) {
           throw error;
         }
@@ -76,15 +60,12 @@ export function KanbanBoard() {
     };
 
     (async () => {
-      const userUID = userId;
-      if (userUID) {
-        const tasks = await getTasksForUser(userUID);
-        console.log(tasks);
-        console.log(userId);
+      if (user?.id) {
+        const tasks = await getTasksForUser(user?.id);
         setTasksUser(tasks);
       }
     })();
-  }, [userId]);
+  }, [user?.id]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -106,35 +87,27 @@ export function KanbanBoard() {
   }, [tasksUser]);
 
   return (
-    <div
-      className="
-        flex
-        items-center
-    "
-    >
+    <div>
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
       >
-        <div className="ml-9 flex gap-4">
-          <div className="flex gap-4">
-            <SortableContext items={columnsId}>
-              {columns.map((col) => (
-                <ColumnContainer
-                  key={col.id}
-                  column={col}
-                  createTask={createTask}
-                  deleteTask={deleteTask}
-                  updateTask={updateTask}
-                  tasks={tasks.filter((task) => task.columnId === col.id)}
-                />
-              ))}
-            </SortableContext>
-          </div>
+        <div className="flex m-5 gap-[2rem]">
+          <SortableContext items={columnsId}>
+            {columns.map((col) => (
+              <ColumnContainer
+                key={col.id}
+                column={col}
+                createTask={createTask}
+                deleteTask={deleteTask}
+                updateTask={updateTask}
+                tasks={tasks.filter((task) => task.columnId === col.id)}
+              />
+            ))}
+          </SortableContext>
         </div>
-
         {createPortal(
           <DragOverlay>
             {activeColumn && (

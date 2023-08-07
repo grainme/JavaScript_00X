@@ -1,69 +1,74 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { supabase } from "./supabaseClient";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { TextInput, FileInput, Label, Toast } from "flowbite-react";
-import { DatePicker } from "antd";
 import { Flame } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 export function ProfileSetup() {
-  const [userId, setUserId] = useState();
   const navigate = useNavigate();
+  const supabase = useSupabaseClient();
+  const user = useUser();
+  const [Avatar, setAvatar] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [CheckProfileImage, setCheckProfileImage] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    const getUserData = async () => {
-      await supabase.auth.getUser().then((value) => {
-        setUserId(value.data?.user.id);
+  console.log(user?.id);
+
+  const CDNURL =
+    "https://fanrwzurfpvlbhywhamg.supabase.co/storage/v1/object/public/avatars/";
+
+  const getAvatars = async () => {
+    const { data, error } = await supabase.storage
+      .from("avatars")
+      .list(user?.id + "/", {
+        limit: 1,
+        offset: 0,
+        sortBy: { column: "name", order: "asc" },
       });
-    };
-    getUserData();
-  }, [userId]);
-
-  const [userInfos, setUserInfos] = useState({
-    username: "",
-    email: "",
-    birthday: null,
-  });
-
-  const [avatarFile, setAvatarFile] = useState(null);
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUserInfos((prevUserInfos) => ({
-      ...prevUserInfos,
-      [name]: value,
-    }));
-  };
-
-  const handleFileChange = (event) => {
-    setAvatarFile(event.target.files[0]);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!avatarFile) {
-      console.error("Avatar file is missing");
-      // Handle error (e.g., show a message to the user)
-      return;
+    if (data !== null) {
+      console.log("DATA : ", data);
+      setAvatar(data);
+    } else {
+      console.log("Error : " + error);
     }
+  };
 
+  const handleAvatarUpload = async (e) => {
+    setLoading(true); // Start loading
+    setSuccess(false); // Reset success
+
+    let file = e.target.files[0];
+
+    const { data, error } = await supabase.storage
+      .from("avatars")
+      .upload(user?.id + "/" + uuidv4(), file);
+
+    if (data) {
+      getAvatars();
+      setSubmitted(true);
+      setLoading(false); // Upload complete, stop loading
+      setSuccess(true); // Set success
+    } else {
+      console.log(error);
+      setLoading(false); // Upload failed, stop loading
+    }
+  };
+
+  const handleFormSubmit = async () => {
     try {
-      const { data: avatarData, error: avatarError } = await supabase.storage
-        .from("avatars")
-        .upload(`${userId}/${avatarFile.name}`, avatarFile);
-
-      if (avatarError) {
-        throw avatarError;
-      }
-
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .upsert([
           {
-            id: userId,
-            username: userInfos.username,
-            full_name: userInfos.username,
-            avatar_url: avatarData.Key, // Assuming avatar_url is a field in your table
+            id: user.id,
+            username: username,
+            full_name: username,
+            avatar_url: CDNURL + user.id + "/" + Avatar[0]?.name,
             // Add other user fields here
           },
         ]);
@@ -73,6 +78,7 @@ export function ProfileSetup() {
       }
 
       console.log("Profile data inserted successfully:", profileData);
+
       // Handle success, show a toast, or redirect the user
       navigate("/work");
     } catch (error) {
@@ -82,17 +88,48 @@ export function ProfileSetup() {
   };
 
   return (
-    <div className="m-auto flex flex-col gap-6 justify-center items-start w-[20rem] mt-[3rem]">
+    <div className="m-auto flex flex-col gap-6 justify-center items-start w-[40rem] mt-[3rem]">
       <Toast className="m-auto justify-center items-center">
         <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-100 text-cyan-500 dark:bg-cyan-800 dark:text-cyan-200">
           <Flame className="h-5 w-5" />
         </div>
         <div className="ml-3 text-sm font-normal">
-          Account Successfully Created!
+          Your Account Successfully Created!
         </div>
         <Toast.Toggle />
       </Toast>
-      <div className="w-[320px]">
+      <div>
+        <ol className="items-center w-full space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
+          <li className="flex items-center text-blue-600 dark:text-blue-500 space-x-2.5">
+            <span className="flex items-center justify-center w-8 h-8 border border-blue-600 rounded-full shrink-0 dark:border-blue-500">
+              1
+            </span>
+            <span>
+              <h3 className="font-medium leading-tight">Sign Up</h3>
+              <p className="text-sm">Custom or Providers</p>
+            </span>
+          </li>
+          <li className="flex items-center text-blue-600 dark:text-blue-500 space-x-2.5">
+            <span className="flex items-center justify-center w-8 h-8 border border-blue-600 rounded-full shrink-0 dark:border-blue-500">
+              2
+            </span>
+            <span>
+              <h3 className="font-medium leading-tight">Profile Setup</h3>
+              <p className="text-sm">Setting up Profile Details</p>
+            </span>
+          </li>
+          <li className="flex items-center text-gray-500 dark:text-gray-400 space-x-2.5">
+            <span className="flex items-center justify-center w-8 h-8 border border-gray-500 rounded-full shrink-0 dark:border-gray-400">
+              3
+            </span>
+            <span>
+              <h3 className="font-medium leading-tight">Welcome!</h3>
+              <p className="text-sm">Enjoy PomodoroKai</p>
+            </span>
+          </li>
+        </ol>
+      </div>
+      <div className="w-[40rem]">
         <div className="mb-2 block">
           <Label value="Username" />
         </div>
@@ -101,12 +138,14 @@ export function ProfileSetup() {
           id="username"
           name="username"
           placeholder="Full Name"
-          value={userInfos.username}
-          onChange={handleInputChange}
+          value={username || ""}
+          onChange={(e) => {
+            setUsername(e.target.value);
+          }}
           required
         />
       </div>
-      <div className="w-[320px]">
+      <div className="w-[40rem]">
         <div className="mb-2 block">
           <Label value="Email" />
         </div>
@@ -115,41 +154,28 @@ export function ProfileSetup() {
           id="email"
           name="email"
           placeholder="Confirm Email"
-          value={userInfos.email}
-          onChange={handleInputChange}
+          value={user?.email}
           required
         />
       </div>
       <div>
-        <div className="mb-2 block">
-          <Label value="Birthday" />
-        </div>
-        <DatePicker
-          className="w-[320px] p-2"
-          name="birthday"
-          value={userInfos.birthday}
-          onChange={(date) =>
-            setUserInfos((prevUserInfos) => ({
-              ...prevUserInfos,
-              birthday: date,
-            }))
-          }
-        />
-        <div className="w-[320px]" id="fileUpload">
+        <div className="w-[40rem]" id="fileUpload">
           <div className="mb-2 block">
             <Label value="Upload file" />
           </div>
           <FileInput
             helperText="A profile picture is useful!"
             id="file"
-            onChange={handleFileChange}
+            onChange={handleAvatarUpload}
           />
+          {loading && <p>Uploading...</p>}
+          {success && <p>Upload completed successfully!</p>}
         </div>
       </div>
       <button
-        type="submit"
-        className="w-[320px] p-3 rounded-lg bg-black text-[#FFFFFF] text-xl hover:bg-slate-900"
-        onClick={handleSubmit}
+        type="button"
+        onClick={handleFormSubmit}
+        className="w-[40rem] p-3 rounded-lg bg-black text-[#FFFFFF] text-xl hover:bg-slate-900"
       >
         Submit
       </button>

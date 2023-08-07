@@ -9,11 +9,11 @@ import { KanbanBoard } from "../components/Kanban";
 
 export function Dashboard() {
   return (
-    <div className="font-grotesk flex flex-row bg-[#FFFEFB]">
+    <div className="font-grotesk flex flex-row bg-[#FFFEFB] focus:outline-none">
       <div>
         <Sidebar />
       </div>
-      <div className="w-screen">
+      <div className="w-screen flex flex-col justify-between">
         <div className="h-10 flex flex-row justify-between items-center my-6 pr-2 pl-[3rem]  border-gray-300 mb-3">
           <SearchBar className="flex-grow" />
           <div className="flex flex-row ">
@@ -34,8 +34,9 @@ export function Dashboard() {
           />
           <Avatars />
         </div>
-
-        <KanbanBoard />
+        <div>
+          <KanbanBoard />
+        </div>
       </div>
     </div>
   );

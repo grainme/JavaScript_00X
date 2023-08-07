@@ -1,41 +1,40 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { supabase } from "../components/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export function Login() {
-  const [userId, setUserId] = useState("");
-  const navigate = useNavigate();
+  const supabase = useSupabaseClient();
+  const navigate = useNavigate(); // Use this to navigate after authentication
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event) => {
-      if (event === "SIGNED_IN") {
-        // Fetch user data
-        const user = await supabase.auth.getUser();
-        if (user) {
-          setUserId(user.data?.user.id);
-        }
+    const handleAuthStateChange = async (event, session) => {
+      console.log("Auth state changed:", event);
 
-        // Check if user has completed profile information
+      if (event === "SIGNED_IN" && session?.user?.id) {
+        console.log(session.user.id);
         const { data } = await supabase
           .from("profiles")
           .select("username")
-          .eq("id", user.data?.user.id)
-          .single();
+          .eq("id", session.user.id);
 
-        if (data && data.username) {
-          // User has profile info, navigate to work page
+        if (data[0]?.username.length > 0) {
+          console.log("DATA IS ", data);
           navigate("/work");
         } else {
-          // User needs to complete profile info, navigate to profile completion page
-          navigate("/Setup");
+          navigate("/setup");
         }
       } else {
-        navigate("/");
+        console.log("OUT");
       }
-    });
-  }, [userId]);
+    };
+
+    return () => {
+      supabase.auth.onAuthStateChange(handleAuthStateChange); // Cleanup the event listener when the component unmounts
+    };
+  }, []);
 
   return (
     <div className="flex w-screen h-screen overflow-auto">
@@ -60,9 +59,6 @@ export function Login() {
           providers={["google"]}
         />
       </div>
-      {/* <div className="hidden md:block relative">
-        <img src={image} alt="img" className="w-full h-full rounded-l-3xl" />
-      </div> */}
     </div>
   );
 }

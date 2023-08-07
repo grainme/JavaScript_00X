@@ -56,7 +56,7 @@ function ColumnContainer(props) {
          bg-[#F5F5F5]
          rounded-tl-2xl 
          rounded-tr-2xl
-        w-[380px]
+        w-1/3
         h-[500px]
         max-h-[500px]
         flex

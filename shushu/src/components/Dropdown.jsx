@@ -1,20 +1,41 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef, useEffect } from "react";
-import profile from "../assets/mriwina.jpg";
-import { supabase } from "./supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export function Dropdown() {
   const navigate = useNavigate();
-  const [userMail, setUserMail] = useState("");
+  const supabase = useSupabaseClient();
+  const user = useUser();
+  const [imageUrl, setImageUrl] = useState("");
+  const [job, setJob] = useState("");
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
-    const getUserData = async () => {
-      await supabase.auth.getUser().then((value) => {
-        setUserMail(value.data?.user.email);
-      });
+    const retrieveAvatar = async () => {
+      try {
+        // Get the public URL of the avatar image from Supabase storage
+        const { data, error } = await supabase
+          .from("profiles")
+          .select()
+          .eq("id", user?.id)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        // Now you have the avatar_url from the profiles table
+        setImageUrl(data?.avatar_url);
+        setJob(data?.job);
+        setUsername(data?.username);
+      } catch (error) {
+        console.error("Error retrieving avatar:", error);
+      }
     };
-    getUserData();
-  }, [userMail]);
+
+    retrieveAvatar();
+  }, [user?.id]);
 
   async function signOut() {
     const { error } = await supabase.auth.signOut().catch(() => {
@@ -54,13 +75,28 @@ export function Dropdown() {
       <button
         id="dropdownAvatarNameButton"
         data-dropdown-toggle="dropdownAvatarName"
-        className="flex items-center text-sm font-medium text-gray-900 rounded-xl hover:text-purple-200  md:mr-0  "
+        className="flex items-center text-sm font-medium text-gray-900 rounded-xl  md:mr-0  "
         type="button"
         onClick={toggleDropdown}
         ref={profileRef} // Add a ref to the profile image
       >
         <span className="sr-only">Open user menu</span>
-        <img className="w-8 h-8 rounded-full" src={profile} alt="user photo" />
+
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <img
+              className="w-10 h-10 rounded-3xl"
+              src={imageUrl}
+              alt="user photo"
+            />{" "}
+            <span className="top-0 left-7 absolute  w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
+          </div>
+
+          <div className=" flex flex-col items-start ">
+            <div className="hover:text-purple-700">{username}</div>
+            <div className="text-gray-500">{job}</div>
+          </div>
+        </div>
       </button>
 
       {/* Dropdown menu */}
@@ -77,9 +113,6 @@ export function Dropdown() {
               20,
           }}
         >
-          <div className="px-4 py-3 text-sm  text-gray-900 dark:text-white">
-            <div className="font-medium">Indie Developer</div>
-          </div>
           <ul
             className="py-2 text-sm text-gray-700 dark:text-gray-200"
             aria-labelledby="dropdownAvatarNameButton"

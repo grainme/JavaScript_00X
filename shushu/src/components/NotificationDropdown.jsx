@@ -2,9 +2,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import profile from "../assets/mriwina.jpg";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 
 export const NotificationDropdown = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const supabase = useSupabaseClient();
+  const user = useUser();
   const dropdownRef = useRef(null);
 
   const toggleDropdown = () => {
@@ -55,11 +58,7 @@ export const NotificationDropdown = () => {
           <a href="#" className="flex px-4 py-3 hover:bg-gray-10">
             {/* Replace the following divs with your actual notification item */}
             <div className="flex-shrink-0">
-              <img
-                className="rounded-full w-11 h-11"
-                src={profile}
-                alt="Jese image"
-              />
+              <img className="rounded-full w-11 h-11" src={profile} />
             </div>
             <div className="w-full pl-3">
               <div className="text-gray-500 text-sm mb-1.5 dark:text-gray-400">

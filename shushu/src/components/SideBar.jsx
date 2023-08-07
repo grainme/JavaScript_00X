@@ -6,6 +6,7 @@ import {
   MessageCircle,
   InfoIcon,
   Settings,
+  BookOpen,
 } from "lucide-react";
 
 // Reusable ListItem component
@@ -58,19 +59,12 @@ export function Sidebar() {
             icon={<Settings className="h-5 w-5 text-[#787486]" />}
             text="Settings"
           />
+          <ListItem
+            icon={<BookOpen className="h-5 w-5 text-[#787486]" />}
+            text="Documentation"
+          />
         </ul>
       </div>
-
-      <section className="w-[15rem] mx-auto mb-3 space-y-7 h-[16rem] rounded-3xl bg-gray-100 p-4 flex flex-col justify-center items-center">
-        <h1 className="text-lg font-semibold">Thoughts Time</h1>
-        <p className="text-center text-sm">
-          We don’t have any notice for you, till then you can share your
-          thoughts with your peers.
-        </p>
-        <button className="bg-white p-3 rounded-xl text-lg font-semibold">
-          Write a message
-        </button>
-      </section>
     </div>
   );
 }
