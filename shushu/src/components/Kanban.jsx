@@ -82,6 +82,7 @@ export function KanbanBoard() {
       content: task.description,
       title: task.title,
       priority: task.priority,
+      dueDate: task.due_date,
     }));
     setTasks(newTasks);
   }, [tasksUser]);
@@ -94,7 +95,7 @@ export function KanbanBoard() {
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
       >
-        <div className="flex m-5 gap-[2rem]">
+        <div className="flex ml-5 mr-5 mb-3 gap-[2rem]">
           <SortableContext items={columnsId}>
             {columns.map((col) => (
               <ColumnContainer

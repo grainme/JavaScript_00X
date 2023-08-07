@@ -78,7 +78,7 @@ function ColumnContainer(props) {
           justify-between
         "
       >
-        <div className="flex gap-[14rem] items-center text-slate-900 text-base font-medium">
+        <div className="flex items-center text-slate-900 text-base font-medium gap-[17rem]">
           <div className="flex flex-row gap-2 items-center text-[19px]">
             {props.column.id === "todo" ? (
               <div className="w-2 h-2 bg-indigo-600 rounded-full" />
@@ -91,7 +91,7 @@ function ColumnContainer(props) {
           </div>
           {props.column.id === "todo" && (
             <PlusIcon
-              className="w-5 h-5 text-indigo-600  bg-indigo-200 rounded-md relative cursor-pointer"
+              className="w-5 h-5 text-indigo-600  bg-indigo-200 hover:bg-indigo-300 rounded-md relative cursor-pointer"
               onClick={() => {
                 props.createTask(props.column.id);
               }}
@@ -101,11 +101,11 @@ function ColumnContainer(props) {
       </div>
       <div className="m-3">
         {props.column.id === "todo" ? (
-          <div className="w-[340px] h-[2px] bg-indigo-600 rounded-sm" />
+          <div className="w-[23rem] h-[2px] bg-indigo-600 rounded-sm" />
         ) : props.column.id === "doing" ? (
-          <div className="w-[340px] h-[2px] bg-amber-500 rounded-sm" />
+          <div className="w-[23rem] h-[2px] bg-amber-500 rounded-sm" />
         ) : (
-          <div className="w-[340px] h-[2px] bg-[#8BC48A] rounded-sm" />
+          <div className="w-[23rem] h-[2px] bg-[#8BC48A] rounded-sm" />
         )}
       </div>
 

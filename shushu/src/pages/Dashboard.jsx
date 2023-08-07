@@ -9,7 +9,7 @@ import { KanbanBoard } from "../components/Kanban";
 
 export function Dashboard() {
   return (
-    <div className="font-grotesk flex flex-row bg-[#FFFEFB] focus:outline-none">
+    <div className=" font-grotesk flex flex-row bg-[#FFFEFB]">
       <div>
         <Sidebar />
       </div>
@@ -28,15 +28,13 @@ export function Dashboard() {
           <Title
             default="Work in progress"
             titleStyle="flex flex-row m-9 font-grotesk items-center space-x-8 text-[40px] font-[500]"
-            classNameInput="text-[40px] font-[500] bg-transparent border-b-2  border-indigo-600 focus:outline-none"
-            inputEdit="p-1 w-6 h-6 bg-indigo-200 text-indigo-600 rounded-lg cursor-pointer"
+            classNameInput="text-[40px] font-[500] bg-transparent border-b-2 border-indigo-600 focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 "
+            inputEdit="p-1 w-6 h-6 bg-indigo-200 text-indigo-600 rounded-lg cursor-pointer hover:bg-indigo-300"
             editIcon="true"
           />
           <Avatars />
         </div>
-        <div>
-          <KanbanBoard />
-        </div>
+        <KanbanBoard />
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { CSS } from "@dnd-kit/utilities";
 import ReactModal from "react-modal";
 import profile from "../assets/mriwina.jpg";
 import { PriorityCard } from "./PriorityCard";
-import { Title } from "./TitleInput";
+import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 
 function TaskCard(props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
@@ -16,6 +16,70 @@ function TaskCard(props) {
   const [lastTrack, setLastTrack] = useState(editedContent);
   const [textAreaType, setTextAreaType] = useState("description");
   const [comment, setComment] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(props.task.title);
+  const [description, setDescription] = useState(props.task.content);
+  const [dueDate, setDueDate] = useState(props.task.dueDate);
+  const [priority, setPriority] = useState(props.task.priority);
+
+  const supabase = useSupabaseClient();
+  const user = useUser();
+
+  const handleEditClick = () => {
+    setIsEditing(!isEditing);
+  };
+
+  async function editTask(oldTask, newTitle, newDescription, newDue_Data) {
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({
+        title: newTitle,
+        description: newDescription,
+        due_date: newDue_Data,
+      })
+      .eq("title", oldTask)
+      .eq("user_id", user?.id);
+
+    if (error) {
+      console.error("Error updating user:", error.message);
+      return;
+    }
+  }
+
+  const handleInputChange = (e) => {
+    setTitle(e.target.value);
+  };
+
+  const handleInputChangeDueDate = (e) => {
+    setDueDate(e.target.value);
+  };
+
+  function handleEditContent(e) {
+    setDescription(e.target.value);
+  }
+
+  function saveChanges() {
+    setIsEditing(false);
+    editTask(props.task.title, title, description, dueDate);
+    closeModal();
+  }
+
+  function cancelEdit() {
+    setEditedContent(lastTrack);
+    setEditMode(false);
+    closeModal();
+  }
+
+  function handleComment(event) {
+    setComment(event.target.value);
+  }
+
+  const handleInputKeyPress = (e) => {
+    if (e.key === "Enter") {
+      setIsEditing(false);
+      editTask(props.task.title, title, description, dueDate);
+    }
+  };
 
   const customModalStyle = {
     content: {
@@ -75,33 +139,6 @@ function TaskCard(props) {
     openModal();
   }
 
-  function handleEditContent(event) {
-    setEditedContent(event.target.value);
-  }
-
-  function saveChanges() {
-    props.updateTask(props.task.id, editedContent);
-    setLastTrack(editedContent);
-    closeModal();
-  }
-
-  function cancelEdit() {
-    setEditedContent(lastTrack);
-    setEditMode(false);
-    closeModal();
-  }
-
-  function handleComment(event) {
-    setComment(event.target.value);
-  }
-
-  function timeNow() {
-    const current = new Date();
-    return `${current.getDate()}/${
-      current.getMonth() + 1
-    }/${current.getFullYear()}`;
-  }
-
   if (isDragging) {
     return (
       <div
@@ -150,10 +187,10 @@ function TaskCard(props) {
         )}
         <div className="flex flex-col gap-1 pl-2 w-[300px] flex-grow">
           <PriorityCard priority={props.task.priority} />
-          {props.task.title && <h1>{props.task.title}</h1>}
+          {props.task.title && <h1>{title}</h1>}
 
           <p className="overflow-y-auto overflow-x-hidden w-[280px] whitespace-pre-wrap text-zinc-500 text-xs font-normal">
-            {editedContent}
+            {description}
           </p>
         </div>
       </div>
@@ -166,9 +203,7 @@ function TaskCard(props) {
         style={customModalStyle}
       >
         {/* Title */}
-        <h1 className="text-[28px] font-medium mb-4 mt-2">
-          {props.task.title}
-        </h1>
+        <h1 className="text-[28px] font-medium mb-4 mt-2">{title}</h1>
 
         {/* Labels Div*/}
         <div className="flex flex-col gap-2">
@@ -178,7 +213,19 @@ function TaskCard(props) {
                 <Tag className="h-[14px] w-[14px]" />
                 Label
               </div>
-              <div className="text-[14px] ">{props.task.title}</div>
+              <div>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={handleInputChange}
+                    onKeyDown={handleInputKeyPress}
+                    className="text-[15px]  bg-transparent border-b-2 border-indigo-600 focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 "
+                  />
+                ) : (
+                  <div onClick={handleEditClick}>{title}</div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -198,13 +245,19 @@ function TaskCard(props) {
                 <TrendingUp className="h-[14px] w-[14px]" />
                 Due Date
               </div>
-              <Title
-                default={timeNow}
-                titleStyle="text-[14px] "
-                classNameInput=" bg-transparent border-b-2  border-indigo-600 focus:outline-none"
-                inputEdit="p-1 w-6 h-6 bg-indigo-200 text-indigo-600 rounded-lg cursor-pointer"
-                editIcon="false"
-              />
+              <div>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={dueDate}
+                    onChange={handleInputChangeDueDate}
+                    onKeyDown={handleInputKeyPress}
+                    className="text-[14px]  bg-transparent border-b-2 border-indigo-600 focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 "
+                  />
+                ) : (
+                  <div onClick={handleEditClick}>{dueDate}</div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -214,7 +267,7 @@ function TaskCard(props) {
                 <CircleDot className="h-[14px] w-[14px]" />
                 Priority
               </div>
-              <PriorityCard priority={props.task.priority} />
+              <PriorityCard priority={priority} />
             </div>
           </div>
         </div>
@@ -238,10 +291,10 @@ function TaskCard(props) {
         </div>
         {/* TextArea */}
         {textAreaType === "description" ? (
-          <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] flex flex-col ">
+          <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px]  text-[#777777] flex flex-col ">
             <textarea
-              className="bg-transparent resize-none focus:outline-none"
-              value={editedContent}
+              className="bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
+              value={description}
               autoFocus
               placeholder="Task content here"
               onChange={handleEditContent}
@@ -250,7 +303,7 @@ function TaskCard(props) {
         ) : (
           <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] flex flex-col ">
             <textarea
-              className="bg-transparent resize-none focus:outline-none"
+              className="bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
               autoFocus
               value={comment}
               placeholder="Commentate here :)"

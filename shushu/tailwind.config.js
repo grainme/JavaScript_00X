@@ -13,6 +13,11 @@ export default {
         grotesk: ["Clash Grotesk", "sans-serif"],
       },
     },
+    variants: {
+      extend: {
+        borderColor: ["focus"], // Add the focus variant
+      },
+    },
   },
   plugins: [require("flowbite/plugin")],
 };

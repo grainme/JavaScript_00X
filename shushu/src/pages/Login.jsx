@@ -20,7 +20,7 @@ export function Login() {
           .select("username")
           .eq("id", session.user.id);
 
-        if (data[0]?.username.length > 0) {
+        if (data[0]?.username !== null) {
           console.log("DATA IS ", data);
           navigate("/work");
         } else {

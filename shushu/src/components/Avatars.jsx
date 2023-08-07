@@ -5,7 +5,7 @@ export function Avatars() {
   return (
     <div className="flex items-center justify-center">
       <div className="flex flex-row items-center space-x-3">
-        <Plus className="w-5 h-5 bg-indigo-200 text-indigo-600 rounded-md cursor-pointer" />
+        <Plus className="w-5 h-5 bg-indigo-200 text-indigo-600 hover:bg-indigo-300 rounded-md cursor-pointer" />
       </div>
       <div className="flex ml-5 -space-x-3 items-center">
         <img
