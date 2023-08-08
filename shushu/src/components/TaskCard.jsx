@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2, Edit, Tag, CircleDot, TrendingUp, Users } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import ReactModal from "react-modal";
-import profile from "../assets/mriwina.jpg";
+import { Comment } from "./Comments";
 import { PriorityCard } from "./PriorityCard";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 
@@ -21,13 +21,75 @@ function TaskCard(props) {
   const [description, setDescription] = useState(props.task.content);
   const [dueDate, setDueDate] = useState(props.task.dueDate);
   const [priority, setPriority] = useState(props.task.priority);
-
+  const [imageUrl, setImageUrl] = useState("");
+  const [job, setJob] = useState("");
+  const [username, setUsername] = useState("");
+  const [Comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
   const supabase = useSupabaseClient();
   const user = useUser();
 
   const handleEditClick = () => {
     setIsEditing(!isEditing);
   };
+
+  const retrieveComments = async () => {
+    try {
+      // Get the public URL of the avatar image from Supabase storage
+      const { data, error } = await supabase
+        .from("comments")
+        .select()
+        .eq("user_id", user?.id)
+        .eq("task_id", props.task.id);
+      if (error) {
+        throw error;
+      }
+      setComments(data);
+    } catch (error) {
+      console.error("Error retrieving Comments:", error);
+    }
+  };
+
+  useEffect(() => {
+    retrieveComments();
+    supabase
+      .channel("table-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "comments",
+        },
+        (payload) => {
+          retrieveComments();
+        }
+      )
+      .subscribe();
+  }, []);
+
+  const retrieveAvatar = async () => {
+    try {
+      // Get the public URL of the avatar image from Supabase storage
+      const { data, error } = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", user?.id)
+        .single();
+
+      if (error) {
+        throw error;
+      }
+      // Now you have the avatar_url from the profiles table
+      setImageUrl(data?.avatar_url);
+      setJob(data?.job);
+      setUsername(data?.username);
+    } catch (error) {
+      console.error("Error retrieving avatar:", error);
+    }
+  };
+  // Getting the users informations, mainly the Avatar
+  retrieveAvatar();
 
   async function editTask(oldTask, newTitle, newDescription, newDue_Data) {
     const { data, error } = await supabase
@@ -47,18 +109,57 @@ function TaskCard(props) {
   }
 
   async function pushCommentBase(taskId, comment) {
-    const { data, error } = await supabase.from("comments").insert([
-      {
-        task_id: taskId,
-        user_id: user?.id,
-        content: comment,
-        cmt_date: timeNow(),
-      },
-    ]);
+    try {
+      if (!supabase) {
+        console.error("Supabase client not initialized.");
+        return;
+      }
 
-    if (error) {
-      console.error("Error inserting comment:", error.message);
-      return;
+      if (!taskId || !comment) {
+        console.error("Invalid taskId or comment.");
+        return;
+      }
+
+      const { data, error } = await supabase.from("comments").insert([
+        {
+          task_id: taskId,
+          user_id: user?.id,
+          content: comment,
+          cmt_date: timeNow(),
+        },
+      ]);
+      await retrieveComments();
+      if (error) {
+        console.error("Error inserting comment:", error.message);
+        return;
+      }
+    } catch (error) {
+      console.error("Error inserting comment:", error);
+    }
+  }
+
+  async function removeComment(commentId) {
+    try {
+      const { data, error } = await supabase
+        .from("comments")
+        .delete()
+        .eq("id", commentId);
+      if (error) {
+        console.error("Error removing comment:", error.message);
+        return;
+      }
+      console.log("Comment removed successfully!");
+
+      // Create a new array excluding the deleted comment
+      const updatedComments = Comments.filter(
+        (comment) => comment.id !== commentId
+      );
+      setComments(updatedComments);
+
+      setIsEditing(false);
+      setComment("");
+    } catch (error) {
+      console.error("Error removing comment:", error);
     }
   }
 
@@ -97,11 +198,10 @@ function TaskCard(props) {
     }
   };
 
-  const saveComment = () => {
-    setIsEditing(false);
+  function saveComment() {
     pushCommentBase(props.task.id, comment);
-    closeModal();
-  };
+    setComment(""); // Clear the comment input after saving
+  }
 
   const customModalStyle = {
     content: {
@@ -115,7 +215,7 @@ function TaskCard(props) {
       flexDirection: "column",
       alignItems: "start",
       gap: "1.2rem",
-      /* Marouane, here you can adjust the space between components! */
+      // Marouane, here you can adjust the space between components!
       // justifyContent: "space-around",
       outline: "none",
       backgroundColor: "white",
@@ -342,16 +442,21 @@ function TaskCard(props) {
           </div>
         )}
         <div className="h-[10rem] w-full rounded-xl flex flex-col gap-4  p-3 text-[14.8px] text-[#2d2d2d] overflow-auto">
-          <div className="flex flex-col gap-2 ">
-            <div className="flex flex-row gap-3 items-center text-[15px] font-medium">
-              <img src={profile} className="w-7 h-7 rounded-full"></img>
-              <div>Saitam Kun</div>
-            </div>
-            <div className="text-[#777777] text-[14px]">
-              <p>We need to finish up this task asap!</p>
-            </div>
-          </div>
+          {Comments.map((comment, key) => {
+            return (
+              <Comment
+                commentId={comment.id}
+                removeComment={removeComment}
+                dateComment={comment.cmt_date}
+                profile={imageUrl}
+                username={username}
+                content={comment.content}
+                key={key}
+              />
+            );
+          })}
         </div>
+
         <div className="mt-2 ml-auto flex flex-row gap-3 m-auto">
           <button
             onClick={saveChanges}

@@ -36,9 +36,6 @@ export function KanbanBoard() {
   const [tasks, setTasks] = useState([]);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
-
-  console.log(user?.id);
-  // Supabase Backend Stuff
   const [tasksUser, setTasksUser] = useState([]);
 
   // This is just testing Supabase Fetching Data from Tables
@@ -145,10 +142,48 @@ export function KanbanBoard() {
 
     setTasks([...tasks, newTask]);
   }
+  async function createTask(columnId) {
+    try {
+      const newTask = {
+        title: "Template",
+        user_id: user.id, // Assuming your tasks table has a user_id column
+        status: "todo",
+        description: "Template",
+        title: "Template",
+        team:2,
+        user_id:user?.id,
+        priority: "Low", // Set the appropriate priority value
+        due_date: new Date(), // Set the due date as needed
+      };
+      const { data, error } = await supabase.from("tasks").insert([newTask]);
+      if (error) {
+        throw error;
+      }
 
-  function deleteTask(id) {
-    const newTasks = tasks.filter((task) => task.id !== id);
-    setTasks(newTasks);
+    } catch (error) {
+      console.error("Error creating task:", error);
+    }
+  }
+
+
+  async function deleteTask(id) {
+    try {
+      // Delete the task from the database
+      const { data, error } = await supabase
+        .from("tasks")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        throw error;
+      }
+
+      // Update the local state by filtering out the deleted task
+      const newTasks = tasks.filter((task) => task.id !== id);
+      setTasks(newTasks);
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   }
 
   function updateTask(id, content) {
@@ -244,9 +279,4 @@ export function KanbanBoard() {
       });
     }
   }
-}
-
-function generateId() {
-  /* Generate a random number between 0 and 10000 */
-  return Math.floor(Math.random() * 10001);
 }
