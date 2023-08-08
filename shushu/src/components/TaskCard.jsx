@@ -46,6 +46,22 @@ function TaskCard(props) {
     }
   }
 
+  async function pushCommentBase(taskId, comment) {
+    const { data, error } = await supabase.from("comments").insert([
+      {
+        task_id: taskId,
+        user_id: user?.id,
+        content: comment,
+        cmt_date: timeNow(),
+      },
+    ]);
+
+    if (error) {
+      console.error("Error inserting comment:", error.message);
+      return;
+    }
+  }
+
   const handleInputChange = (e) => {
     setTitle(e.target.value);
   };
@@ -79,6 +95,12 @@ function TaskCard(props) {
       setIsEditing(false);
       editTask(props.task.title, title, description, dueDate);
     }
+  };
+
+  const saveComment = () => {
+    setIsEditing(false);
+    pushCommentBase(props.task.id, comment);
+    closeModal();
   };
 
   const customModalStyle = {
@@ -137,6 +159,14 @@ function TaskCard(props) {
   function toggleEditMode() {
     setEditMode(true);
     openModal();
+  }
+
+  function timeNow() {
+    const current = new Date();
+    const year = current.getFullYear();
+    const month = String(current.getMonth() + 1).padStart(2, "0");
+    const day = String(current.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
 
   if (isDragging) {
@@ -321,15 +351,6 @@ function TaskCard(props) {
               <p>We need to finish up this task asap!</p>
             </div>
           </div>
-          <div className="flex flex-col gap-2 ">
-            <div className="flex flex-row gap-3 items-center text-[15px] font-medium">
-              <img src={profile} className="w-7 h-7 rounded-full"></img>
-              <div>Saitam Kun</div>
-            </div>
-            <div className="text-[#777777] text-[14px]">
-              <p>We need to finish up this task asap!</p>
-            </div>
-          </div>
         </div>
         <div className="mt-2 ml-auto flex flex-row gap-3 m-auto">
           <button
@@ -338,7 +359,10 @@ function TaskCard(props) {
           >
             Edit
           </button>
-          <button className="px-4 py-2 rounded bg-purple-200 hover:bg-purple-300 text-[#7165da] ">
+          <button
+            onClick={saveComment}
+            className="px-4 py-2 rounded bg-purple-200 hover:bg-purple-300 text-[#7165da] "
+          >
             Comment
           </button>
         </div>
