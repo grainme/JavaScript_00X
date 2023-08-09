@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { TextInput, FileInput, Label, Toast } from "flowbite-react";
-import { Flame } from "lucide-react";
+import { Flame, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
@@ -12,6 +12,8 @@ export function ProfileSetup() {
   const user = useUser();
   const [Avatar, setAvatar] = useState(null);
   const [username, setUsername] = useState(null);
+  const [jobName, setJobName] = useState(null);
+  const [fullName, setFullName] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [CheckProfileImage, setCheckProfileImage] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -67,9 +69,9 @@ export function ProfileSetup() {
           {
             id: user.id,
             username: username,
-            full_name: username,
+            full_name: fullName,
+            job: jobName,
             avatar_url: CDNURL + user.id + "/" + Avatar[0]?.name,
-            // Add other user fields here
           },
         ]);
 
@@ -89,19 +91,10 @@ export function ProfileSetup() {
 
   return (
     <div className="m-auto flex flex-col gap-6 justify-center items-start w-[40rem] mt-[3rem]">
-      <Toast className="m-auto justify-center items-center">
-        <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-100 text-cyan-500 dark:bg-cyan-800 dark:text-cyan-200">
-          <Flame className="h-5 w-5" />
-        </div>
-        <div className="ml-3 text-sm font-normal">
-          Your Account Successfully Created!
-        </div>
-        <Toast.Toggle />
-      </Toast>
       <div>
         <ol className="items-center w-full space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
-          <li className="flex items-center text-blue-600 dark:text-blue-500 space-x-2.5">
-            <span className="flex items-center justify-center w-8 h-8 border border-blue-600 rounded-full shrink-0 dark:border-blue-500">
+          <li className="flex items-center text-purple-600 dark:text-purple-500 space-x-2.5">
+            <span className="flex items-center justify-center w-8 h-8 border border-purple-600 rounded-full shrink-0 dark:border-purple-500">
               1
             </span>
             <span>
@@ -109,8 +102,8 @@ export function ProfileSetup() {
               <p className="text-sm">Custom or Providers</p>
             </span>
           </li>
-          <li className="flex items-center text-blue-600 dark:text-blue-500 space-x-2.5">
-            <span className="flex items-center justify-center w-8 h-8 border border-blue-600 rounded-full shrink-0 dark:border-blue-500">
+          <li className="flex items-center text-purple-600 dark:text-purple-500 space-x-2.5">
+            <span className="flex items-center justify-center w-8 h-8 border border-purple-600 rounded-full shrink-0 dark:border-purple-500">
               2
             </span>
             <span>
@@ -137,10 +130,42 @@ export function ProfileSetup() {
           addon="@"
           id="username"
           name="username"
-          placeholder="Full Name"
+          placeholder="Username"
           value={username || ""}
           onChange={(e) => {
             setUsername(e.target.value);
+          }}
+          required
+        />
+      </div>
+      <div className="w-[40rem]">
+        <div className="mb-2 block">
+          <Label value="Full Name" />
+        </div>
+        <TextInput
+          addon="@"
+          id="fullName"
+          name="fullName"
+          placeholder="Full Name"
+          value={fullName || ""}
+          onChange={(e) => {
+            setFullName(e.target.value);
+          }}
+          required
+        />
+      </div>
+      <div className="w-[40rem]">
+        <div className="mb-2 block">
+          <Label value="Job Position" />
+        </div>
+        <TextInput
+          addon="@"
+          id="job"
+          name="job"
+          placeholder="Job Position - eg: Hacker :)"
+          value={jobName || ""}
+          onChange={(e) => {
+            setJobName(e.target.value);
           }}
           required
         />
@@ -159,17 +184,37 @@ export function ProfileSetup() {
         />
       </div>
       <div>
-        <div className="w-[40rem]" id="fileUpload">
+        <div className="w-[40rem] flex flex-col gap-1" id="fileUpload">
           <div className="mb-2 block">
-            <Label value="Upload file" />
+            <Label value="Profile Avatar" />
           </div>
-          <FileInput
-            helperText="A profile picture is useful!"
-            id="file"
-            onChange={handleAvatarUpload}
-          />
-          {loading && <p>Uploading...</p>}
-          {success && <p>Upload completed successfully!</p>}
+          <FileInput id="file" onChange={handleAvatarUpload} />
+          {loading && (
+            <div className="fixed bottom-0 right-0 p-4">
+              {" "}
+              <Toast className="m-auto justify-center items-center">
+                <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-200 text-purple-500 ">
+                  <Loader className="h-5 w-5" />
+                </div>
+                <div className="ml-3 text-sm font-normal">Uploading...</div>
+                <Toast.Toggle />
+              </Toast>
+            </div>
+          )}
+          {success && (
+            <div className="fixed bottom-0 right-0 p-4">
+              {" "}
+              <Toast className="m-auto justify-center items-center">
+                <div className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-200 text-purple-500 ">
+                  <Flame className="h-5 w-5" />
+                </div>
+                <div className="ml-3 text-sm font-normal">
+                  gg photo uploaded!
+                </div>
+                <Toast.Toggle />
+              </Toast>
+            </div>
+          )}
         </div>
       </div>
       <button

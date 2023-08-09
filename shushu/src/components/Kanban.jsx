@@ -27,6 +27,7 @@ export function KanbanBoard() {
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [tasksUser, setTasksUser] = useState([]);
+  const [dragCheck, setDragCheck] = useState(false);
 
   useEffect(() => {
     if (user?.id) {
@@ -65,7 +66,7 @@ export function KanbanBoard() {
     try {
       const newTask = {
         title: "Template",
-        status: columnId === 1 ? "todo" : columnId === 2 ? "doing" : "done",
+        status: "todo",
         description: "Template",
         team_id: 2,
         user_id: user?.id,
@@ -85,6 +86,7 @@ export function KanbanBoard() {
   useEffect(() => {
     if (user?.id) {
       getTasksForUser(user.id);
+      onDragOver(event);
       const subscription = supabase
         .channel("table-db-changes")
         .on(
@@ -96,6 +98,7 @@ export function KanbanBoard() {
           },
           () => {
             getTasksForUser(user.id);
+            onDragOver(event);
           }
         )
         .subscribe();
@@ -104,7 +107,7 @@ export function KanbanBoard() {
         subscription.unsubscribe();
       };
     }
-  }, [user?.id]);
+  }, [user?.id, tasksUser, dragCheck]);
 
   async function deleteTask(id) {
     try {
@@ -164,7 +167,27 @@ export function KanbanBoard() {
     });
   }
 
+  async function updateTaskStatus(taskId, newStatus) {
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .update({ status: newStatus })
+        .eq("id", taskId);
+
+      if (error) {
+        throw error;
+      }
+
+      console.log("Task status updated successfully:", data);
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
+  }
+
   function onDragOver(event) {
+    setDragCheck((prev) => {
+      !prev;
+    });
     const { active, over } = event;
     if (!over) {
       return;
@@ -189,9 +212,16 @@ export function KanbanBoard() {
         const activeIndex = prevTasks.findIndex((t) => t.id === activeId);
         const overIndex = prevTasks.findIndex((t) => t.id === overId);
 
-        prevTasks[activeIndex].columnId = prevTasks[overIndex].columnId;
+        const updatedTasks = [...prevTasks];
+        updatedTasks[activeIndex].columnId = updatedTasks[overIndex].columnId;
 
-        return arrayMove(prevTasks, activeIndex, overIndex);
+        // Update task status in the database
+        updateTaskStatus(
+          updatedTasks[activeIndex].id,
+          updatedTasks[overIndex].columnId
+        );
+
+        return updatedTasks;
       });
     }
 
@@ -201,9 +231,13 @@ export function KanbanBoard() {
       setTasks((prevTasks) => {
         const activeIndex = prevTasks.findIndex((t) => t.id === activeId);
 
-        prevTasks[activeIndex].columnId = overId;
+        const updatedTasks = [...prevTasks];
+        updatedTasks[activeIndex].columnId = overId;
 
-        return arrayMove(prevTasks, activeIndex, activeIndex);
+        // Update task status in the database
+        updateTaskStatus(updatedTasks[activeIndex].id, overId);
+
+        return updatedTasks;
       });
     }
   }

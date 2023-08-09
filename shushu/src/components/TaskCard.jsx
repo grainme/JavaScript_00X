@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { Trash2, Edit, Tag, CircleDot, TrendingUp, Users } from "lucide-react";
@@ -25,7 +26,6 @@ function TaskCard(props) {
   const [job, setJob] = useState("");
   const [username, setUsername] = useState("");
   const [Comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
   const supabase = useSupabaseClient();
   const user = useUser();
 
@@ -91,17 +91,22 @@ function TaskCard(props) {
   // Getting the users informations, mainly the Avatar
   retrieveAvatar();
 
-  async function editTask(oldTask, newTitle, newDescription, newDue_Data) {
+  async function editTask(
+    oldTask,
+    newTitle,
+    newDescription,
+    newDue_Data,
+    newPriority
+  ) {
     const { data, error } = await supabase
       .from("tasks")
       .update({
         title: newTitle,
         description: newDescription,
         due_date: newDue_Data,
+        priority: newPriority,
       })
-      .eq("title", oldTask)
-      .eq("user_id", user?.id);
-
+      .eq("id", props.task.id);
     if (error) {
       console.error("Error updating user:", error.message);
       return;
@@ -177,7 +182,7 @@ function TaskCard(props) {
 
   function saveChanges() {
     setIsEditing(false);
-    editTask(props.task.title, title, description, dueDate);
+    editTask(props.task.title, title, description, dueDate, priority);
     closeModal();
   }
 
@@ -194,7 +199,6 @@ function TaskCard(props) {
   const handleInputKeyPress = (e) => {
     if (e.key === "Enter") {
       setIsEditing(false);
-      editTask(props.task.title, title, description, dueDate);
     }
   };
 
@@ -393,11 +397,25 @@ function TaskCard(props) {
 
           <div>
             <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  text-[#777777]">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#777777]">
                 <CircleDot className="h-[14px] w-[14px]" />
                 Priority
               </div>
-              <PriorityCard priority={priority} />
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={priority}
+                  onKeyDown={handleInputKeyPress}
+                  onChange={(e) => {
+                    setPriority(e.target.value);
+                  }}
+                  className="text-[14px] bg-transparent border-b-2 border-indigo-600 focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
+                />
+              ) : (
+                <div onClick={handleEditClick}>
+                  <PriorityCard priority={priority} />
+                </div>
+              )}
             </div>
           </div>
         </div>
