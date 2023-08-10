@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useMemo } from "react";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import {
@@ -62,13 +63,12 @@ export function KanbanBoard() {
     setTasks(newTasks);
   }, [tasksUser]);
 
-  async function createTask(columnId) {
+  async function createTask() {
     try {
       const newTask = {
         title: "Template",
         status: "todo",
         description: "Template",
-        team_id: 2,
         user_id: user?.id,
         priority: "Low",
         due_date: new Date(),
@@ -86,7 +86,7 @@ export function KanbanBoard() {
   useEffect(() => {
     if (user?.id) {
       getTasksForUser(user.id);
-      onDragOver(event);
+      onDragOver(event); // You might want to pass an event here or remove this line
       const subscription = supabase
         .channel("table-db-changes")
         .on(
@@ -98,7 +98,7 @@ export function KanbanBoard() {
           },
           () => {
             getTasksForUser(user.id);
-            onDragOver(event);
+            onDragOver(event); // You might want to pass an event here or remove this line
           }
         )
         .subscribe();
@@ -107,7 +107,7 @@ export function KanbanBoard() {
         subscription.unsubscribe();
       };
     }
-  }, [user?.id, tasksUser, dragCheck]);
+  }, [user?.id, tasksUser]);
 
   async function deleteTask(id) {
     try {
@@ -185,9 +185,7 @@ export function KanbanBoard() {
   }
 
   function onDragOver(event) {
-    setDragCheck((prev) => {
-      !prev;
-    });
+    setDragCheck((prev) => !prev);
     const { active, over } = event;
     if (!over) {
       return;

@@ -9,7 +9,7 @@ import { KanbanBoard } from "../components/Kanban";
 
 export function Dashboard() {
   return (
-    <div className=" font-grotesk flex flex-row bg-[#FFFEFB]">
+    <div className="flex flex-row bg-[#FFFEFB]">
       <div>
         <Sidebar />
       </div>
