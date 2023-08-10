@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { TextInput, FileInput, Label, Toast } from "flowbite-react";
 import { Flame, Loader } from "lucide-react";
@@ -90,7 +90,7 @@ export function ProfileSetup() {
   };
 
   return (
-    <div className="m-auto flex flex-col gap-6 justify-center items-start w-[40rem] mt-[3rem]">
+    <div className="bg-[#FFFEFB] m-auto flex flex-col gap-6 justify-center items-start w-[40rem] mt-[3rem]">
       <div>
         <ol className="items-center w-full space-y-4 sm:flex sm:space-x-8 sm:space-y-0">
           <li className="flex items-center text-purple-600 dark:text-purple-500 space-x-2.5">

@@ -9,15 +9,16 @@ import background from "../assets/clouds.jpg";
 export function Login() {
   const supabase = useSupabaseClient();
   const navigate = useNavigate(); // Use this to navigate after authentication
+  const maxWidthForMobileTablet = 768; // Adjust this threshold as needed
 
   useEffect(() => {
-    const maxWidthForMobileTablet = 768; // Adjust this threshold as needed
-
     if (window.innerWidth <= maxWidthForMobileTablet) {
       // Redirect to the "/phone" page
       navigate("/phone");
     }
+  }, []);
 
+  useEffect(() => {
     const handleAuthStateChange = async (event, session) => {
       console.log("Auth state changed:", event);
 
@@ -51,29 +52,40 @@ export function Login() {
         alt="Background"
         className="absolute inset-0 w-full h-full object-cover opacity-40"
       />
-      <div className="container min-h-screen mx-auto px-8 flex flex-col items-center justify-center space-y-10 lg:flex-row lg:px-0 lg:space-x-8 lg:pb-10 xl:space-x-24 relative z-10">
-        <div className="text-black w-1/2 bg-[#FFFEFB] flex flex-col items-center px-8 py-10 rounded-2xl z-10 shadow-2xl shadow-black/10 md:px-14 lg:py-16 selection:bg-black selection:text-white">
-          <div className=" text-[50px] font-semibold">PomodoroKai</div>
-          <Auth
-            supabaseClient={supabase}
-            appearance={{
-              theme: ThemeSupa,
-              style: {
-                button: {
-                  border: "black",
-                  color: "white",
-                  backgroundColor: "black",
-                },
-                input: {
-                  width: "25rem",
-                  color: "#4A5568",
-                  backgroundColor: "transparent",
-                  border: "none",
-                },
-              },
-            }}
-            providers={["google"]}
-          />
+      <div className="container min-h-screen mx-auto px-4 md:px-8 lg:px-12 xl:px-24">
+        <div className="flex flex-col items-center justify-center space-y-10 lg:flex-row lg:space-x-8 lg:pb-10 xl:space-x-24 relative z-10">
+          <div className="flex flex-col space-y-2">
+            <h1 className="font-bold text-4xl lg:text-5xl">PomodoroKai</h1>
+            <p className="opacity-75 text-xl max-w-md lg:text-2xl">
+              where focus meets collaboration effortlessly
+            </p>
+          </div>
+          <div className="relative w-full max-w-md lg:max-w-lg">
+            <div className="text-black w-full bg-[#FFFEFB] flex flex-col items-center px-4 md:px-8 lg:px-10 py-10 rounded-2xl z-10 shadow-2xl shadow-black/10 md:py-14 lg:py-16 selection:bg-black selection:text-white">
+              <h3 className="font-bold text-3xl mb-10 lg:text-4xl">welcome!</h3>
+              <div className="flex flex-col space-y-4 w-full font-medium">
+                <Auth
+                  supabaseClient={supabase}
+                  appearance={{
+                    theme: ThemeSupa,
+                    style: {
+                      // Adjust the styles as needed
+                      button: {
+                        border: "black",
+                        color: "white",
+                        backgroundColor: "black",
+                      },
+                      input: {
+                        width: "100%",
+                        // Add your input styles here
+                      },
+                    },
+                  }}
+                  providers={["google"]}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

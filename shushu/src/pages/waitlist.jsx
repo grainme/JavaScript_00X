@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import background from "../assets/clouds.jpg";
 import { useState, useEffect } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
