@@ -6,8 +6,23 @@ import { Dropdown } from "../components/Dropdown";
 import { Title } from "../components/TitleInput";
 import { Avatars } from "../components/Avatars";
 import { KanbanBoard } from "../components/Kanban";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 export function Dashboard() {
+  const supabase = useSupabaseClient();
+
+  const channelA = supabase
+    .channel("schema-db-changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+      },
+      (payload) => console.log("Change received!", payload)
+    )
+    .subscribe();
+
   return (
     <div className="flex flex-row bg-[#FFFEFB]">
       <div>

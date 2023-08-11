@@ -83,32 +83,6 @@ export function KanbanBoard() {
     }
   }
 
-  useEffect(() => {
-    if (user?.id) {
-      getTasksForUser(user.id);
-      onDragOver(event);
-      const subscription = supabase
-        .channel("table-db-changes")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "tasks",
-          },
-          () => {
-            getTasksForUser(user.id);
-            onDragOver(event); // I might want to pass an event here or remove this line
-          }
-        )
-        .subscribe();
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    }
-  }, [user?.id, tasksUser]);
-
   async function deleteTask(id) {
     try {
       const { data, error } = await supabase

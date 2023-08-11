@@ -52,20 +52,6 @@ function TaskCard(props) {
 
   useEffect(() => {
     retrieveComments();
-    supabase
-      .channel("table-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "comments",
-        },
-        (payload) => {
-          retrieveComments();
-        }
-      )
-      .subscribe();
   }, []);
 
   const retrieveAvatar = async () => {

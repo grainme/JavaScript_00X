@@ -1,4 +1,4 @@
-export function NotifAccpeted() {
+export function NotifAccepted() {
   return (
     <div
       id="toast-bottom-left"

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Bell } from "lucide-react"; // Only importing Bell from lucide-react
+import { Bell } from "lucide-react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { FriendNotif } from "./FriendNotification";
 import { CommentNotification } from "./CommentNotification";
@@ -17,7 +17,8 @@ export const NotificationDropdown = () => {
       const { data, error } = await supabase
         .from("friend_relationships")
         .select()
-        .eq("friend_id", user?.id);
+        .eq("friend_id", user?.id)
+        .eq("status", "pending");
 
       if (error) {
         throw error;
@@ -29,36 +30,31 @@ export const NotificationDropdown = () => {
   };
 
   useEffect(() => {
-    if (showDropdown) {
-      retrieveRequests();
-    }
-  }, [showDropdown]);
+    retrieveRequests();
+  }, [supabase, user?.id]);
 
   useEffect(() => {
-    const pendingFriendRequests = friendRequests.filter(
-      (request) => request.status === "pending"
-    );
-
-    if (pendingFriendRequests.length > 0) {
-      const friendId = pendingFriendRequests[0].user_id;
-      const retrieveFriendData = async () => {
-        try {
+    const retrieveFriendData = async () => {
+      try {
+        if (friendRequests.length > 0) {
+          const friendIds = friendRequests.map((request) => request.user_id);
           const { data, error } = await supabase
             .from("profiles")
             .select()
-            .eq("id", friendId);
+            .in("id", friendIds);
 
           if (error) {
             throw error;
           }
           setFriends(data);
-        } catch (error) {
-          console.error("Error retrieving friend data:", error);
         }
-      };
-      retrieveFriendData();
-    }
-  }, [friendRequests]);
+      } catch (error) {
+        console.error("Error retrieving friend data:", error);
+      }
+    };
+
+    retrieveFriendData();
+  }, [friendRequests, supabase]);
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -110,6 +106,7 @@ export const NotificationDropdown = () => {
                 avatar={friend.avatar_url}
                 job={friend.job}
                 key={index}
+                setFriendRequests={setFriendRequests}
               />
             ))}
           </div>
