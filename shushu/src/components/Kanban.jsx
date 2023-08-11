@@ -86,7 +86,7 @@ export function KanbanBoard() {
   useEffect(() => {
     if (user?.id) {
       getTasksForUser(user.id);
-      onDragOver(event); // You might want to pass an event here or remove this line
+      onDragOver(event);
       const subscription = supabase
         .channel("table-db-changes")
         .on(
@@ -98,7 +98,7 @@ export function KanbanBoard() {
           },
           () => {
             getTasksForUser(user.id);
-            onDragOver(event); // You might want to pass an event here or remove this line
+            onDragOver(event); // I might want to pass an event here or remove this line
           }
         )
         .subscribe();

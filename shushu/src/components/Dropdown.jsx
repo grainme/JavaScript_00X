@@ -10,14 +10,18 @@ export function Dropdown() {
   const [imageUrl, setImageUrl] = useState("");
   const [job, setJob] = useState("");
   const [username, setUsername] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const profileRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const retrieveAvatar = async () => {
+    // Fetch user data when the component mounts
+    const retrieveUserData = async () => {
       try {
-        // Get the public URL of the avatar image from Supabase storage
         const { data, error } = await supabase
           .from("profiles")
-          .select()
+          .select("avatar_url, username, job")
           .eq("id", user?.id)
           .single();
 
@@ -25,17 +29,27 @@ export function Dropdown() {
           throw error;
         }
 
-        // Now you have the avatar_url from the profiles table
         setImageUrl(data?.avatar_url);
         setJob(data?.job);
         setUsername(data?.username);
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error retrieving avatar:", error);
+        console.error("Error retrieving user data:", error);
+        setIsLoading(false); // Ensure loading state is updated even if an error occurs
       }
     };
 
-    retrieveAvatar();
-  }, [user?.id]);
+    retrieveUserData();
+  }, [supabase, user?.id]);
+
+  useEffect(() => {
+    const preloadImage = new Image();
+    preloadImage.src = imageUrl;
+    preloadImage.onload = () => {
+      // Image is preloaded, you can now set it in the state
+      setImageUrl(preloadImage.src);
+    };
+  }, [imageUrl]);
 
   async function signOut() {
     const { error } = await supabase.auth.signOut().catch(() => {
@@ -43,10 +57,6 @@ export function Dropdown() {
     });
     navigate("/");
   }
-
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const profileRef = useRef(null);
-  const dropdownRef = useRef(null);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);

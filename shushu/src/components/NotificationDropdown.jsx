@@ -91,9 +91,7 @@ export const NotificationDropdown = () => {
         type="button"
       >
         <Bell className="h-5 w-5" />
-        {friendRequests.length > 0 && (
-          <div className="relative inline-flex w-3 h-3 bg-red-500 border-2 border-white rounded-full -top-2 right-3 dark:border-gray-900"></div>
-        )}
+        <div className="relative inline-flex w-3 h-3 bg-red-500 border-2 border-white rounded-full -top-2 right-3 dark:border-gray-900"></div>
       </button>
       {showDropdown && (
         <div

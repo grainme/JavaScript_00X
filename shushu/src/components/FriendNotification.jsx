@@ -1,8 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { useState } from "react";
-import { newFriend } from "./NewFriend";
+import { useState, useEffect } from "react";
+import { NotifAccpeted } from "./NotifAccepted";
 
 export function FriendNotif(props) {
   const [gotcha, setGotcha] = useState(false);
@@ -14,16 +14,14 @@ export function FriendNotif(props) {
       const { data, error } = await supabase
         .from("friend_relationships")
         .update({ status: "accepted" })
-        .eq("friend_id", user?.id) // The one getting friends
-        .eq("user_id", props.userId); // The one who's aiming to be friend with the current user
-      if (data) {
-        setGotcha(true);
-      }
+        .eq("friend_id", user?.id)
+        .eq("user_id", props.userId);
+
+      setGotcha(true);
+
       if (error) {
         throw error;
       }
-
-      // You might want to refresh the notifications or update the UI here
     } catch (error) {
       console.error("Error accepting friend request:", error);
     }
@@ -31,26 +29,30 @@ export function FriendNotif(props) {
 
   const declineStatus = async () => {
     try {
-      const { data, error } = await supabase
-        .from("friend_relationships") // Assuming this is the correct table name
+      const { error } = await supabase
+        .from("friend_relationships")
         .delete()
         .eq("friend_id", props.user.id);
 
       if (error) {
         throw error;
       }
-
-      // You might want to refresh the notifications or update the UI here
     } catch (error) {
       console.error("Error declining friend request:", error);
     }
   };
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div
       id="toast-interactive"
       className="w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow dark:bg-gray-800 dark:text-gray-400"
       role="alert"
     >
+      {gotcha ? <NotifAccpeted /> : ""}
       <div className="flex">
         <div className="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:text-blue-300 dark:bg-blue-900">
           <img src={props.avatar} alt="User" className="rounded-full"></img>
