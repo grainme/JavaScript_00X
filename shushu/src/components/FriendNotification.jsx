@@ -2,7 +2,6 @@
 /* eslint-disable react/prop-types */
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useState, useEffect } from "react";
-import { NotifAccepted } from "./NotifAccepted";
 
 export function FriendNotif(props) {
   const supabase = useSupabaseClient();
@@ -24,6 +23,9 @@ export function FriendNotif(props) {
 
       // Update gotcha state
       setGotcha(true);
+
+      // Store the accepted status in LocalStorage
+      localStorage.setItem(`friend_request_${props.userId}`, "accepted");
     } catch (error) {
       console.error("Error accepting friend request:", error);
     }
@@ -48,6 +50,9 @@ export function FriendNotif(props) {
     return null;
   }
 
+  // Check if the accepted status is stored in LocalStorage
+  const acceptedStatus = localStorage.getItem(`friend_request_${props.userId}`);
+
   return (
     <div
       id="toast-interactive"
@@ -60,7 +65,7 @@ export function FriendNotif(props) {
           <span className="sr-only">User icon</span>
         </div>
 
-        {gotcha ? (
+        {acceptedStatus === "accepted" ? (
           <div className="ml-3 text-sm font-normal">
             Bingo, Invitation got accepted!
           </div>

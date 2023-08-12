@@ -14,7 +14,7 @@ export function Login() {
   useEffect(() => {
     if (window.innerWidth <= maxWidthForMobileTablet) {
       // Redirect to the "/phone" page
-      navigate("/phone");
+      navigate("/waitlist");
     }
   }, []);
 

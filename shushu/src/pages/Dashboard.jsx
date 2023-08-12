@@ -19,7 +19,7 @@ export function Dashboard() {
         event: "*",
         schema: "public",
       },
-      (payload) => console.log("Change received!", payload)
+      (payload) => {}
     )
     .subscribe();
 

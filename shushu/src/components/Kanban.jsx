@@ -33,8 +33,21 @@ export function KanbanBoard() {
   useEffect(() => {
     if (user?.id) {
       getTasksForUser(user.id);
+      const subscription = supabase
+        .channel("schema-db-changes")
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+          },
+          (payload) => {
+            getTasksForUser(user.id);
+          }
+        )
+        .subscribe();
     }
-  }, [user?.id]);
+  }, [user?.id, tasks]);
 
   const getTasksForUser = async (userUID) => {
     try {

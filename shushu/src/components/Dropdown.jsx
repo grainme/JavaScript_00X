@@ -55,6 +55,10 @@ export function Dropdown() {
     const { error } = await supabase.auth.signOut().catch(() => {
       console.log(error);
     });
+
+    // Clear the items from LocalStorage
+    localStorage.clear();
+
     navigate("/");
   }
 
