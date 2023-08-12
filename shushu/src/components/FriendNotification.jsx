@@ -36,11 +36,14 @@ export function FriendNotif(props) {
       const { error } = await supabase
         .from("friend_relationships")
         .delete()
-        .eq("friend_id", props.userId);
+        .eq("friend_id", user?.id);
 
       if (error) {
         throw error;
       }
+
+      // Call the parent component's onDecline function to remove the notification
+      props.onDecline(user?.id);
     } catch (error) {
       console.error("Error declining friend request:", error);
     }

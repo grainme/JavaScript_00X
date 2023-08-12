@@ -78,6 +78,14 @@ export const NotificationDropdown = () => {
     };
   }, [showDropdown]);
 
+  const handleDecline = (userId) => {
+    // Filter out the declined notification
+    const updatedNotifications = friends.filter(
+      (notif) => notif.userId !== userId
+    );
+    setFriends(updatedNotifications);
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -107,6 +115,7 @@ export const NotificationDropdown = () => {
                 job={friend.job}
                 key={index}
                 setFriendRequests={setFriendRequests}
+                onDecline={handleDecline}
               />
             ))}
           </div>

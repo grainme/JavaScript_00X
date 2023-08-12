@@ -24,7 +24,7 @@ export function Dashboard() {
     .subscribe();
 
   return (
-    <div className="flex flex-row bg-[#FFFEFB]">
+    <div className="font-Raleway flex flex-row bg-[#FFFEFB]">
       <div>
         <Sidebar />
       </div>

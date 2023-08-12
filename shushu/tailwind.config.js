@@ -9,8 +9,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        Raleway: ["Raleway", "sans-serif"],
+        openSans: ["Open Sans", "sans-serif"],
         clash: ["Clash Display", "sans-serif"],
-        grotesk: ["Clash Grotesk", "sans-serif"],
       },
     },
     variants: {
