@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
@@ -31,7 +33,7 @@ export const NotificationDropdown = () => {
 
   useEffect(() => {
     retrieveRequests();
-  }, [supabase, user?.id]);
+  }, [supabase, user?.id, showDropdown]);
 
   useEffect(() => {
     const retrieveFriendData = async () => {
@@ -54,7 +56,7 @@ export const NotificationDropdown = () => {
     };
 
     retrieveFriendData();
-  }, [friendRequests, supabase]);
+  }, [friendRequests, supabase, showDropdown]);
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -77,14 +79,6 @@ export const NotificationDropdown = () => {
       document.removeEventListener("click", handleOutsideClick);
     };
   }, [showDropdown]);
-
-  const handleDecline = (userId) => {
-    // Filter out the declined notification
-    const updatedNotifications = friends.filter(
-      (notif) => notif.userId !== userId
-    );
-    setFriends(updatedNotifications);
-  };
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -115,7 +109,6 @@ export const NotificationDropdown = () => {
                 job={friend.job}
                 key={index}
                 setFriendRequests={setFriendRequests}
-                onDecline={handleDecline}
               />
             ))}
           </div>

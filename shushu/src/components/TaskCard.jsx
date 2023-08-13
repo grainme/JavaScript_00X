@@ -8,6 +8,9 @@ import ReactModal from "react-modal";
 import { Comment } from "./Comments";
 import { PriorityCard } from "./PriorityCard";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { FriendsDrop } from "./FriendsDropdown";
+import { Avatars } from "./Avatars";
+import { AssigneeAvatars } from "./AssigneeAvtars";
 
 function TaskCard(props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
@@ -329,18 +332,17 @@ function TaskCard(props) {
         <div className="flex flex-col gap-2">
           <div>
             <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  text-[#777777]">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] font-medium text-[#202020]">
                 <Tag className="h-[14px] w-[14px]" />
                 Label
               </div>
               <div>
                 {isEditing ? (
                   <input
-                    type="text"
                     value={title}
                     onChange={handleInputChange}
                     onKeyDown={handleInputKeyPress}
-                    className="text-[15px]  bg-transparent border-b-2 border-indigo-600 focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 "
+                    className="focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 "
                   />
                 ) : (
                   <div onClick={handleEditClick}>{title}</div>
@@ -351,28 +353,33 @@ function TaskCard(props) {
 
           <div>
             <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  text-[#777777]">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  font-medium text-[#202020]">
                 <Users className="h-[14px] w-[14px]" />
                 Assignee
               </div>
-              <div className="text-[14px] ">To Be Done!</div>
+              <div className="flex flex-row gap-2 items-center  text-[14px] ">
+                <AssigneeAvatars
+                  classy="w-7 h-7 border-2 border-white rounded-full"
+                  taskId={props.task.id}
+                />
+                <FriendsDrop taskId={props.task.id} />
+              </div>
             </div>
           </div>
 
           <div>
             <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  text-[#777777]">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] font-medium text-[#202020]">
                 <TrendingUp className="h-[14px] w-[14px]" />
                 Due Date
               </div>
               <div>
                 {isEditing ? (
                   <input
-                    type="text"
                     value={dueDate}
                     onChange={handleInputChangeDueDate}
                     onKeyDown={handleInputKeyPress}
-                    className="text-[14px]  bg-transparent border-b-2 border-indigo-600 focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 "
+                    className="focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 "
                   />
                 ) : (
                   <div onClick={handleEditClick}>{dueDate}</div>
@@ -383,19 +390,18 @@ function TaskCard(props) {
 
           <div>
             <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#777777]">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] font-medium text-[#202020]">
                 <CircleDot className="h-[14px] w-[14px]" />
                 Priority
               </div>
               {isEditing ? (
                 <input
-                  type="text"
                   value={priority}
                   onKeyDown={handleInputKeyPress}
                   onChange={(e) => {
                     setPriority(e.target.value);
                   }}
-                  className="text-[14px] bg-transparent border-b-2 border-indigo-600 focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
+                  className="focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 "
                 />
               ) : (
                 <div onClick={handleEditClick}>

@@ -36,14 +36,18 @@ export function FriendNotif(props) {
       const { error } = await supabase
         .from("friend_relationships")
         .delete()
-        .eq("friend_id", user?.id);
+        .eq("friend_id", user?.id)
+        .eq("user_id", props.userId);
 
       if (error) {
         throw error;
       }
 
-      // Call the parent component's onDecline function to remove the notification
-      props.onDecline(user?.id);
+      // Update gotcha state
+      setGotcha(true);
+
+      // Store the accepted status in LocalStorage
+      localStorage.setItem(`friend_request_${props.userId}`, "declined");
     } catch (error) {
       console.error("Error declining friend request:", error);
     }
@@ -71,6 +75,10 @@ export function FriendNotif(props) {
         {acceptedStatus === "accepted" ? (
           <div className="ml-3 text-sm font-normal">
             Bingo, Invitation got accepted!
+          </div>
+        ) : acceptedStatus === "declined" ? (
+          <div className="ml-3 text-sm font-normal">
+            Invitation got declined!
           </div>
         ) : (
           <div className="ml-3 text-sm font-normal">

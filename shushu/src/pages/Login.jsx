@@ -20,17 +20,13 @@ export function Login() {
 
   useEffect(() => {
     const handleAuthStateChange = async (event, session) => {
-      console.log("Auth state changed:", event);
-
       if (event === "SIGNED_IN" && session?.user?.id) {
-        console.log(session.user.id);
         const { data } = await supabase
           .from("profiles")
           .select("username")
           .eq("id", session.user.id);
 
         if (data[0]?.username !== null) {
-          console.log("DATA IS ", data);
           navigate("/work");
         } else {
           navigate("/setup");
@@ -41,7 +37,7 @@ export function Login() {
     };
 
     return () => {
-      supabase.auth.onAuthStateChange(handleAuthStateChange); // Cleanup the event listener when the component unmounts
+      supabase.auth.onAuthStateChange(handleAuthStateChange);
     };
   }, []);
 

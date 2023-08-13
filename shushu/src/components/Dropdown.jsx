@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -117,15 +118,7 @@ export function Dropdown() {
       {isDropdownOpen && (
         <div
           id="dropdownAvatarName"
-          className=" my-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 absolute"
-          style={{
-            // Calculate the position based on the profile image's coordinates
-            top: profileRef.current.offsetTop + profileRef.current.offsetHeight,
-            right:
-              window.innerWidth -
-              (profileRef.current.offsetLeft + profileRef.current.offsetWidth) -
-              20,
-          }}
+          className="flex flex-col items-start my-3 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-[8rem] absolute"
         >
           <ul
             className="py-2 text-sm text-gray-700 dark:text-gray-200"

@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import debounce from "lodash/debounce";
 
-export function Avatars() {
+export function Avatars(props) {
   const [Friends, setFriends] = useState([]); // Initialize with an empty array
   const [avatars, setAvatars] = useState([]);
   const supabase = useSupabaseClient();
@@ -51,7 +53,6 @@ export function Avatars() {
 
   useEffect(() => {
     if (user) {
-      console.log(user?.id);
       debouncedFetchAvatars();
       fetchAvatars();
       supabase
@@ -64,7 +65,6 @@ export function Avatars() {
             table: "friend_relationships",
           },
           (payload) => {
-            console.log(payload);
             fetchAvatars();
           }
         )
@@ -74,13 +74,13 @@ export function Avatars() {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="flex ml-5 -space-x-3 items-center">
+      <div className="flex -space-x-3 items-center">
         {avatars.map(
           (avatar, index) =>
             avatar.avatar_url && (
               <img
                 key={index}
-                className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
+                className={props.classy}
                 src={avatar.avatar_url}
                 alt=""
               />
