@@ -192,14 +192,14 @@ export function FriendsDrop(props) {
   };
 
   return (
-    <div ref={dropdownRef}>
+    <div ref={dropdownRef} className="flex flex-row items-center justify-start">
       <button
         id="dropdownAvatarNameButton"
         data-dropdown-toggle="dropdownAvatarName"
         onClick={toggleDropdown}
         ref={profileRef} // Add a ref to the profile image
       >
-        <PlusCircle className="focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 h-4 w-4" />
+        <PlusCircle className="focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 h-4 w-4 " />
       </button>
 
       {/* Dropdown menu */}

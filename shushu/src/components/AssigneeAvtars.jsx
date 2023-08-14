@@ -31,7 +31,6 @@ export function AssigneeAvatars(props) {
 
   useEffect(() => {
     if (user && props.taskId) {
-      // Check for both user and provided taskId
       fetchAssignees();
       supabase
         .channel("table-db-changes")
@@ -48,7 +47,7 @@ export function AssigneeAvatars(props) {
         )
         .subscribe();
     }
-  }, [user, props.taskId]); // Update when user or taskId changes
+  }, [user, assignees]); // Update when user or taskId changes
 
   return (
     <div className="flex items-center justify-center">

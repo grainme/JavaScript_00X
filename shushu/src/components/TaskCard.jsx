@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
@@ -275,6 +276,57 @@ function TaskCard(props) {
     );
   }
 
+  const [taskId, setTaskId] = useState(""); // Set the task ID you want to update
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    // Upload the file to Supabase storage
+    const { data, error } = await supabase.storage
+      .from("tasks")
+      .upload(`images/${file.name}`, file);
+
+    if (error) {
+      console.error("Error uploading file:", error);
+      return;
+    }
+
+    const imageUrl = data.Key;
+
+    // Fetch the current images array from the task
+    const { data: taskData, error: taskError } = await supabase
+      .from("tasks")
+      .select("images")
+      .eq("id", taskId)
+      .single();
+
+    if (taskError) {
+      console.error("Error fetching task data:", taskError);
+      return;
+    }
+
+    const currentImages = taskData.images || [];
+
+    // Update the images array with the new image URL
+    const updatedImages = [...currentImages, imageUrl];
+
+    // Update the task's images array
+    const { data: updatedTask, error: updateError } = await supabase
+      .from("tasks")
+      .update({ images: updatedImages })
+      .eq("id", taskId);
+
+    if (updateError) {
+      console.error("Error updating task:", updateError);
+      return;
+    }
+
+    console.log("File uploaded and task updated successfully:", updatedTask);
+  };
+
   return (
     <>
       <div
@@ -428,6 +480,14 @@ function TaskCard(props) {
           >
             Comments
           </div>
+          <div
+            className="hover:text-[#7c63e8] cursor-pointer hover:border-b-2 border-[#7c63e8]"
+            onClick={() => {
+              setTextAreaType("Upload");
+            }}
+          >
+            Upload
+          </div>
         </div>
         {/* TextArea */}
         {textAreaType === "description" ? (
@@ -440,7 +500,7 @@ function TaskCard(props) {
               onChange={handleEditContent}
             />
           </div>
-        ) : (
+        ) : textAreaType == "comment" ? (
           <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] flex flex-col ">
             <textarea
               className="bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
@@ -449,6 +509,23 @@ function TaskCard(props) {
               placeholder="Commentate here :)"
               onChange={handleComment}
             />
+          </div>
+        ) : (
+          <div className="flex items-center justify-center w-full">
+            <label className="flex flex-col items-center justify-center w-full h-30 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 ">
+              <div className="flex flex-col items-center justify-center pt-7 pb-6">
+                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                  <span className="font-semibold">Click to upload</span> or drag
+                  and drop
+                </p>
+              </div>
+              <input
+                id="dropzone-file"
+                type="file"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+            </label>
           </div>
         )}
         <div className="h-[10rem] w-full rounded-xl flex flex-col gap-4  p-3 text-[14.8px] text-[#2d2d2d] overflow-auto">

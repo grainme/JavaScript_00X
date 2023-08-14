@@ -28,7 +28,24 @@ export function KanbanBoard() {
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [tasksUser, setTasksUser] = useState([]);
+  const [userAvatar, setUserAvatar] = useState("");
   const [dragCheck, setDragCheck] = useState(false);
+
+  useEffect(() => {
+    const checkAvatar = async () => {
+      try {
+        console.log(user?.id);
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("id", user?.id);
+        setUserAvatar(data[0].avatar_url);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    checkAvatar();
+  }, []);
 
   useEffect(() => {
     if (user?.id) {
@@ -85,6 +102,7 @@ export function KanbanBoard() {
         user_id: user?.id,
         priority: "Low",
         due_date: new Date(),
+        assignee: [{ name: user?.id, avatar: userAvatar }],
       };
       const { data, error } = await supabase.from("tasks").insert([newTask]);
       if (error) {
