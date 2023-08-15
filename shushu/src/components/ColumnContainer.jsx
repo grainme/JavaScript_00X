@@ -1,17 +1,41 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, Save } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import { useMemo, useState } from "react";
 import TaskCard from "./TaskCard";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 function ColumnContainer(props) {
   const [editMode, setEditMode] = useState(false);
+  const supabase = useSupabaseClient();
 
   const tasksIds = useMemo(() => {
     return props.tasks.map((task) => task.id);
   }, [props.tasks]);
+
+  async function updateTaskStatus(taskId, newStatus) {
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .update({ status: newStatus })
+        .eq("id", taskId);
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
+  }
+
+  // Iterate over the movedTasks array and update task statuses
+  function updateMovedTasksStatus() {
+    for (const movedTask of props.movedTasks) {
+      updateTaskStatus(movedTask.taskId, movedTask.finalStatus);
+    }
+  }
 
   const { setNodeRef, transform, transition, isDragging } = useSortable({
     id: props.column.id,
@@ -52,16 +76,7 @@ function ColumnContainer(props) {
     <div
       ref={setNodeRef}
       style={style}
-      className="
-         bg-[#F5F5F5]
-         rounded-tl-2xl 
-         rounded-tr-2xl
-        w-1/3
-        h-[500px]
-        max-h-[500px]
-        flex
-        flex-col
-      "
+      className="bg-[#F5F5F5] rounded-2xl w-1/3 flex flex-col"
     >
       {/* Column title */}
       <div
@@ -73,44 +88,49 @@ function ColumnContainer(props) {
           py-6
           pl-5
           font-bold
-          flex
-          items-center
-          justify-between
         "
       >
-        <div className="flex items-center text-slate-900 text-base font-medium gap-[17rem]">
-          <div className="flex flex-row gap-2 items-center text-[19px]">
-            {props.column.id === "todo" ? (
-              <div className="w-2 h-2 bg-indigo-600 rounded-full" />
-            ) : props.column.id === "doing" ? (
-              <div className="w-2 h-2 bg-amber-500 rounded-full" />
-            ) : (
-              <div className="w-2 h-2 bg-[#8BC48A] rounded-full" />
-            )}
-            {props.column.title}
+        <div className="flex flex-row justify-between items-center text-slate-900 text-base font-medium">
+          <div className="flex items-center grow gap-2 text-[19px]">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                props.column.id === "todo"
+                  ? "bg-indigo-600"
+                  : props.column.id === "doing"
+                  ? "bg-amber-500"
+                  : "bg-[#8BC48A]"
+              }`}
+            />
+            <h1>{props.column.title}</h1>
           </div>
           {props.column.id === "todo" && (
-            <PlusIcon
-              className="w-5 h-5 text-indigo-600  bg-indigo-200 hover:bg-indigo-300 rounded-md relative cursor-pointer"
-              onClick={() => {
-                props.createTask(props.column.id);
-              }}
-            />
+            <div className="flex flex-row gap-2 mr-5">
+              <PlusIcon
+                className="w-6 h-6 p-1 text-indigo-600 bg-indigo-200 hover:bg-indigo-300 rounded-md relative cursor-pointer"
+                onClick={() => {
+                  props.createTask(props.column.id);
+                }}
+              />
+              <Save
+                onClick={updateMovedTasksStatus}
+                className="w-6 h-6 p-1  text-indigo-600 bg-indigo-200 hover:bg-indigo-300 rounded-md relative cursor-pointer"
+              />
+            </div>
           )}
         </div>
       </div>
       <div className="m-3">
         {props.column.id === "todo" ? (
-          <div className="w-[23rem] h-[2px] bg-indigo-600 rounded-sm" />
+          <div className=" h-[2px] bg-indigo-600 rounded-sm" />
         ) : props.column.id === "doing" ? (
-          <div className="w-[23rem] h-[2px] bg-amber-500 rounded-sm" />
+          <div className=" h-[2px] bg-amber-500 rounded-sm" />
         ) : (
-          <div className="w-[23rem] h-[2px] bg-[#8BC48A] rounded-sm" />
+          <div className=" h-[2px] bg-[#8BC48A] rounded-sm" />
         )}
       </div>
 
       {/* Column task container */}
-      <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
+      <div className="flex flex-grow h-[28rem] flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
         <SortableContext items={tasksIds}>
           {props.tasks.map((task) => (
             <TaskCard

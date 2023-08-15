@@ -15,7 +15,6 @@ export function ProfileSetup() {
   const [jobName, setJobName] = useState(null);
   const [fullName, setFullName] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-  const [CheckProfileImage, setCheckProfileImage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 

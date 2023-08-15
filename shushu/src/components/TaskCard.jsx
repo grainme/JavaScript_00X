@@ -1,7 +1,8 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Trash2, Edit, Tag, CircleDot, TrendingUp, Users } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -10,8 +11,8 @@ import { Comment } from "./Comments";
 import { PriorityCard } from "./PriorityCard";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { FriendsDrop } from "./FriendsDropdown";
-import { Avatars } from "./Avatars";
 import { AssigneeAvatars } from "./AssigneeAvtars";
+import { v4 as uuidv4 } from "uuid";
 
 function TaskCard(props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
@@ -30,8 +31,83 @@ function TaskCard(props) {
   const [job, setJob] = useState("");
   const [username, setUsername] = useState("");
   const [Comments, setComments] = useState([]);
+  const [taskImgUrl, setTaskImgUrl] = useState("");
+  const [ImgHere, setImgHere] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const supabase = useSupabaseClient();
   const user = useUser();
+
+  const CDNURL_TASK =
+    "https://fanrwzurfpvlbhywhamg.supabase.co/storage/v1/object/public/tasks";
+
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+    console.log(file);
+    console.log(props.task.id);
+    // Upload the file to Supabase storage
+    const { data, error } = await supabase.storage
+      .from("tasks")
+      .upload(user?.id + "/" + props.task.id + "/" + uuidv4(), file);
+
+    if (error) {
+      console.error("Error uploading file:", error);
+      return;
+    }
+    console.log(data);
+
+    // ughhhh this is quite haaaard!
+    const imageUrl = CDNURL_TASK + "/" + data.path;
+    setUploadedImageUrl(imageUrl);
+
+    // Fetch the current images array from the task
+    const { data: taskData, error: taskError } = await supabase
+      .from("tasks")
+      .select("images")
+      .eq("id", props.task.id)
+      .single();
+
+    if (taskError) {
+      console.error("Error fetching task data:", taskError);
+      return;
+    }
+
+    const currentImages = taskData.images || [];
+
+    // Update the images array with the new image URL
+    const updatedImages = [...currentImages, imageUrl];
+
+    // Update the task's images array
+    const { data: updatedTask, error: updateError } = await supabase
+      .from("tasks")
+      .update({ images: updatedImages })
+      .eq("id", props.task.id);
+
+    if (updateError) {
+      console.error("Error updating task:", updateError);
+      return;
+    }
+
+    console.log("File uploaded and task updated successfully:", updatedTask);
+  };
+
+  const fetchTaskImages = async () => {
+    // Fetch the current images array from the task
+    const { data: taskData, error: taskError } = await supabase
+      .from("tasks")
+      .select("images")
+      .eq("id", props.task.id);
+
+    if (taskData) {
+      const currentImages = taskData[0].images || [];
+      setTaskImgUrl(currentImages[0]);
+      setImgHere(true);
+    } else {
+      console.error("Error fetching task data:", taskError);
+    }
+  };
 
   const handleEditClick = () => {
     setIsEditing(!isEditing);
@@ -54,10 +130,6 @@ function TaskCard(props) {
     }
   };
 
-  useEffect(() => {
-    retrieveComments();
-  }, []);
-
   const retrieveAvatar = async () => {
     try {
       // Get the public URL of the avatar image from Supabase storage
@@ -78,8 +150,12 @@ function TaskCard(props) {
       console.error("Error retrieving avatar:", error);
     }
   };
-  // Getting the users informations, mainly the Avatar
-  retrieveAvatar();
+
+  useEffect(() => {
+    retrieveComments();
+    fetchTaskImages();
+    retrieveAvatar();
+  }, [user?.id, props.task]);
 
   async function editTask(
     oldTask,
@@ -276,57 +352,6 @@ function TaskCard(props) {
     );
   }
 
-  const [taskId, setTaskId] = useState(""); // Set the task ID you want to update
-
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) {
-      return;
-    }
-
-    // Upload the file to Supabase storage
-    const { data, error } = await supabase.storage
-      .from("tasks")
-      .upload(`images/${file.name}`, file);
-
-    if (error) {
-      console.error("Error uploading file:", error);
-      return;
-    }
-
-    const imageUrl = data.Key;
-
-    // Fetch the current images array from the task
-    const { data: taskData, error: taskError } = await supabase
-      .from("tasks")
-      .select("images")
-      .eq("id", taskId)
-      .single();
-
-    if (taskError) {
-      console.error("Error fetching task data:", taskError);
-      return;
-    }
-
-    const currentImages = taskData.images || [];
-
-    // Update the images array with the new image URL
-    const updatedImages = [...currentImages, imageUrl];
-
-    // Update the task's images array
-    const { data: updatedTask, error: updateError } = await supabase
-      .from("tasks")
-      .update({ images: updatedImages })
-      .eq("id", taskId);
-
-    if (updateError) {
-      console.error("Error updating task:", updateError);
-      return;
-    }
-
-    console.log("File uploaded and task updated successfully:", updatedTask);
-  };
-
   return (
     <>
       <div
@@ -342,31 +367,41 @@ function TaskCard(props) {
           setMouseIsOver(false);
         }}
       >
-        {mouseIsOver && (
-          <div>
-            <button
-              onClick={toggleEditMode}
-              className="stroke-white hover:bg-amber-500 hover:text-white bg-columnBackgroundColor p-2 rounded opacity-60 hover:opacity-100"
-            >
-              <Edit className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => {
-                props.deleteTask(props.task.id);
-              }}
-              className="stroke-white hover:bg-red-400 hover:text-white bg-columnBackgroundColor p-2 rounded opacity-60 hover:opacity-100"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </div>
-        )}
         <div className="flex flex-col gap-1 pl-2 w-[300px] flex-grow">
-          <PriorityCard priority={props.task.priority} />
+          <div className="flex flex-row items-center justify-between">
+            <PriorityCard priority={props.task.priority} className="grow" />
+            <div>
+              <button
+                onClick={toggleEditMode}
+                className="stroke-white hover:bg-amber-500 hover:text-white bg-columnBackgroundColor p-2 rounded opacity-60 hover:opacity-100"
+              >
+                <Edit className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => {
+                  props.deleteTask(props.task.id);
+                }}
+                className="stroke-white hover:bg-red-400 hover:text-white bg-columnBackgroundColor p-2 rounded opacity-60 hover:opacity-100"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
           {props.task.title && <h1>{title}</h1>}
 
           <p className="overflow-y-auto overflow-x-hidden w-[280px] whitespace-pre-wrap text-zinc-500 text-xs font-normal">
             {description}
           </p>
+
+          {props.task.images !== null && (
+            <div className="rounded-lg overflow-hidden max-w-max h-[10rem]">
+              <img
+                src={props.task.images}
+                alt="Task Image"
+                className="max-w-1/2 max-h-1/2 object-contain"
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -412,7 +447,7 @@ function TaskCard(props) {
               <div className="flex flex-row gap-2 items-center  text-[14px] ">
                 <AssigneeAvatars
                   classy="w-7 h-7 border-2 border-white rounded-full"
-                  taskId={props.task.id}
+                  assignees={props.task.assignee}
                 />
                 <FriendsDrop taskId={props.task.id} />
               </div>
@@ -465,7 +500,7 @@ function TaskCard(props) {
         </div>
         <div className="flex flex-row gap-5 mt-2 text-[15px] font-medium text-[#777777] ">
           <div
-            className="hover:text-[#7c63e8] cursor-pointer hover:border-b-2 border-[#7c63e8]"
+            className="hover:text-[#7c63e8] cursor-pointer "
             onClick={() => {
               setTextAreaType("description");
             }}
@@ -473,7 +508,7 @@ function TaskCard(props) {
             Description
           </div>
           <div
-            className="hover:text-[#7c63e8] cursor-pointer hover:border-b-2 border-[#7c63e8]"
+            className="hover:text-[#7c63e8] cursor-pointer "
             onClick={() => {
               setTextAreaType("comment");
             }}
@@ -481,86 +516,104 @@ function TaskCard(props) {
             Comments
           </div>
           <div
-            className="hover:text-[#7c63e8] cursor-pointer hover:border-b-2 border-[#7c63e8]"
+            className="hover:text-[#7c63e8] cursor-pointer "
             onClick={() => {
-              setTextAreaType("Upload");
+              setTextAreaType("upload");
             }}
           >
             Upload
           </div>
         </div>
         {/* TextArea */}
-        {textAreaType === "description" ? (
-          <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px]  text-[#777777] flex flex-col ">
-            <textarea
-              className="bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
-              value={description}
-              autoFocus
-              placeholder="Task content here"
-              onChange={handleEditContent}
-            />
-          </div>
-        ) : textAreaType == "comment" ? (
-          <div className="h-[17%] w-full rounded-xl bg-[#F5F5F5] p-3 text-[14.8px] text-[#777777] flex flex-col ">
-            <textarea
-              className="bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
-              autoFocus
-              value={comment}
-              placeholder="Commentate here :)"
-              onChange={handleComment}
-            />
-          </div>
-        ) : (
-          <div className="flex items-center justify-center w-full">
-            <label className="flex flex-col items-center justify-center w-full h-30 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 ">
-              <div className="flex flex-col items-center justify-center pt-7 pb-6">
-                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold">Click to upload</span> or drag
-                  and drop
-                </p>
-              </div>
-              <input
-                id="dropzone-file"
-                type="file"
-                onChange={handleFileUpload}
-                className="hidden"
+        <div className="w-full rounded-xl bg-[#F5F5F5] text-[14.8px] text-[#777777] flex flex-col">
+          {" "}
+          {textAreaType === "description" ? (
+            <div className=" w-full rounded-xl bg-[#F5F5F5] p-1 text-[14.8px]  text-[#777777] flex flex-col ">
+              <textarea
+                className="bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
+                value={description}
+                autoFocus
+                placeholder="Task content here"
+                onChange={handleEditContent}
               />
-            </label>
+            </div>
+          ) : textAreaType === "comment" ? (
+            <div className=" w-full rounded-xl bg-[#F5F5F5] p-1 text-[14.8px] text-[#777777] flex flex-col ">
+              <textarea
+                className="bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
+                autoFocus
+                value={comment}
+                placeholder="Commentate here :)"
+                onChange={handleComment}
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              <div className="flex items-center justify-center w-full">
+                <label className="flex flex-col items-center justify-center w-full h-30 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 ">
+                  <div className="flex flex-col items-center justify-center pt-7 pb-6">
+                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span className="font-semibold">Click to upload</span> or
+                      drag and drop
+                    </p>
+                  </div>
+                  <input
+                    id="dropzone-file"
+                    type="file"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              {uploadedImageUrl && (
+                <div className="rounded-lg overflow-hidden max-w-max  mt-2">
+                  <img
+                    src={uploadedImageUrl}
+                    alt="Uploaded Task Image"
+                    className="max-w-1/2 max-h-1/2 object-contain"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+          <div className="flex justify-between items-end">
+            {textAreaType === "comment" ? (
+              <button
+                onClick={saveComment}
+                className="flex ml-auto m-2 px-3 py-1 text-[14px] rounded bg-blue-500 text-white hover:bg-blue-600"
+              >
+                Publish
+              </button>
+            ) : textAreaType === "description" ? (
+              <button
+                onClick={saveChanges}
+                className="flex ml-auto m-2 px-3 py-1 text-[14px] rounded bg-blue-500 text-white hover:bg-blue-600"
+              >
+                Save changes
+              </button>
+            ) : null}
+          </div>
+        </div>
+        {textAreaType !== "upload" && (
+          <div className=" w-full rounded-xl flex flex-col gap-4  p-3 text-[14.8px] text-[#2d2d2d]">
+            {Comments.map((comment, key) => {
+              return (
+                <Comment
+                  commentId={comment.id}
+                  removeComment={removeComment}
+                  dateComment={comment.cmt_date}
+                  profile={imageUrl}
+                  username={username}
+                  content={comment.content}
+                  key={key}
+                />
+              );
+            })}
           </div>
         )}
-        <div className="h-[10rem] w-full rounded-xl flex flex-col gap-4  p-3 text-[14.8px] text-[#2d2d2d] overflow-auto">
-          {Comments.map((comment, key) => {
-            return (
-              <Comment
-                commentId={comment.id}
-                removeComment={removeComment}
-                dateComment={comment.cmt_date}
-                profile={imageUrl}
-                username={username}
-                content={comment.content}
-                key={key}
-              />
-            );
-          })}
-        </div>
-
-        <div className="mt-2 ml-auto flex flex-row gap-3 m-auto">
-          <button
-            onClick={saveChanges}
-            className="px-4 py-2 rounded bg-[#ceffe2] text-[#439b66] hover:bg-[#b5edcb] "
-          >
-            Edit
-          </button>
-          <button
-            onClick={saveComment}
-            className="px-4 py-2 rounded bg-purple-200 hover:bg-purple-300 text-[#7165da] "
-          >
-            Comment
-          </button>
-        </div>
       </ReactModal>
     </>
   );
 }
 
-export default TaskCard;
+export default memo(TaskCard);

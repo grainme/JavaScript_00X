@@ -125,17 +125,6 @@ export function FriendsDrop(props) {
     };
   }, [imageUrl]);
 
-  async function signOut() {
-    const { error } = await supabase.auth.signOut().catch(() => {
-      console.log(error);
-    });
-
-    // Clear the items from LocalStorage
-    localStorage.clear();
-
-    navigate("/");
-  }
-
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };

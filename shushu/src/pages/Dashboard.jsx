@@ -48,7 +48,7 @@ export function Dashboard() {
       <div>
         <Sidebar />
       </div>
-      <div className="w-screen flex flex-col justify-between">
+      <div className="w-screen flex flex-col ">
         <div className="h-10 flex flex-row justify-between items-center my-6 pr-2 pl-[3rem]  border-gray-300 mb-3">
           <SearchBar className="flex-grow" />
           <div className="flex flex-row ">
