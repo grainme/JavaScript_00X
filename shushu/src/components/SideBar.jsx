@@ -8,20 +8,20 @@ import {
   Settings,
   BookOpen,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
-// Reusable ListItem component
-function ListItem({ icon, text }) {
+function ListItem({ icon, text, to }) {
   return (
     <li>
-      <a
-        href="#"
+      <Link
+        to={to}
         className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
       >
         <div className="flex flex-row items-center space-x-3">
           {icon}
           <div className="text-[#787486]">{text}</div>
         </div>
-      </a>
+      </Link>
     </li>
   );
 }
@@ -38,30 +38,37 @@ export function Sidebar() {
           <ListItem
             icon={<HomeIcon className="h-5 w-5 text-[#787486]" />}
             text="Home"
+            to="/work"
           />
           <ListItem
             icon={<Hourglass className="h-5 w-5 text-[#787486]" />}
             text="Pomodoro"
+            to="/"
           />
           <ListItem
             icon={<KanbanSquare className="h-5 w-5 text-[#787486]" />}
             text="Kanban"
+            to="/"
           />
           <ListItem
             icon={<MessageCircle className="h-5 w-5 text-[#787486]" />}
             text="Messages"
+            to="/chat"
           />
           <ListItem
             icon={<InfoIcon className="h-5 w-5 text-[#787486]" />}
             text="About"
+            to="/"
           />
           <ListItem
             icon={<Settings className="h-5 w-5 text-[#787486]" />}
             text="Settings"
+            to="/"
           />
           <ListItem
             icon={<BookOpen className="h-5 w-5 text-[#787486]" />}
             text="Documentation"
+            to="/"
           />
         </ul>
       </div>
