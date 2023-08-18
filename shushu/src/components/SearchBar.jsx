@@ -77,7 +77,7 @@ export function SearchBar() {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="font-Bricolage flex justify-center items-center h-screen">
       <div className="relative">
         <label className="block">
           <span className="absolute h-9 flex items-center justify-center pl-2">
@@ -85,7 +85,7 @@ export function SearchBar() {
           </span>
           <input
             className="h-9 py-3 pl-8 bg-gray-100 rounded-lg w-[270px] placeholder-gray-400 focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0 text-[14px]"
-            placeholder="Invite a friend"
+            placeholder="find a friend!"
             type="text"
             value={friendMail}
             onChange={(e) => setFriendMail(e.target.value)}

@@ -94,7 +94,7 @@ export const NotificationDropdown = () => {
       {showDropdown && (
         <div
           id="dropdownNotification"
-          className="z-20 absolute right-0 mt-2 w-[20rem] max-h-[40rem] bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-800 dark:divide-gray-700 overflow-y-auto"
+          className="font-Bricolage z-20 absolute right-0 mt-2 w-[20rem] max-h-[40rem] bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-800 dark:divide-gray-700 overflow-y-auto"
           aria-labelledby="dropdownNotificationButton"
         >
           <div className="block px-4 py-2 font-medium text-gray-700 rounded-t-lg bg-white dark:bg-gray-800 dark:text-white">

@@ -1,9 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { Sidebar } from "../components/SideBar";
-import profile from "../assets/mriwina.jpg";
 import { Member } from "./TeamMember";
-import { PlusIcon, Search, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
 import { useEffect, useState, useRef } from "react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
@@ -151,112 +150,111 @@ export function Chat() {
   }, [messagesData]);
 
   return (
-    <div className="flex flex-row bg-[#FFFEFB]">
-      <div>
-        <Sidebar />
-      </div>
-      <div className="flex flex-row w-screen">
-        <div className="w-[1px] opacity-10 bg-slate-600"></div>
-        <div className="w-2/3">
-          {selectedMember && (
-            <div className="flex flex-col m-4 h-[86vh]">
-              {/* Render the chat messages here */}
-              <div className="flex flex-col flex-1 gap-4 ml-4  overflow-y-auto max-h-[calc(100vh - 150px)]">
-                {" "}
-                {/* Example chat message */}
-                <ChatMessage
-                  image={selectedMember.avatar_url}
-                  name={selectedMember.full_name}
-                  LastMessage="Online"
-                />
-                <div className="flex-grow"></div>
-                <div className="flex flex-col gap-4 ml-4 text-[13px]">
-                  {messagesData &&
-                    messagesData.map(
-                      (message, key) =>
-                        ((message.sender_id === selectedMember.id &&
-                          message.receiver_id === user.id) ||
-                          (message.receiver_id === selectedMember.id &&
-                            message.sender_id === user.id)) && (
+    <div className="flex flex-row ">
+      <div className="w-[1px] opacity-10 bg-slate-600"></div>
+      <div className="w-2/3">
+        {selectedMember && (
+          <div className="flex flex-col m-4 h-[94%]">
+            {/* Render the chat messages here */}
+            <div className="flex flex-col flex-1 gap-4 ml-4  overflow-y-auto max-h-[calc(100vh - 150px)]">
+              {" "}
+              {/* Example chat message */}
+              <ChatMessage
+                image={selectedMember.avatar_url}
+                name={selectedMember.full_name}
+                LastMessage="Online"
+              />
+              <div className="flex-grow"></div>
+              <div className=" font-Raleway flex flex-col gap-4 ml-4 text-[14px] text-[#202020]">
+                {messagesData &&
+                  messagesData.map(
+                    (message, key) =>
+                      ((message.sender_id === selectedMember.id &&
+                        message.receiver_id === user.id) ||
+                        (message.receiver_id === selectedMember.id &&
+                          message.sender_id === user.id)) && (
+                        <div
+                          key={key}
+                          className={`${
+                            message.sender_id === user?.id
+                              ? "flex flex-row-reverse"
+                              : "flex"
+                          }`}
+                        >
                           <div
-                            key={key}
                             className={`${
                               message.sender_id === user?.id
-                                ? "flex flex-row-reverse"
-                                : "flex"
-                            }`}
+                                ? "self-end bg-purple-600 text-white "
+                                : "self-start bg-gray-100 text-gray-700"
+                            } p-2 pl-4 pr-4 max-w-[60%] rounded-2xl`}
                           >
-                            <div
-                              className={`${
-                                message.sender_id === user?.id
-                                  ? "self-end bg-purple-600 text-white "
-                                  : "self-start bg-gray-100 text-gray-700"
-                              } p-2 pl-4 pr-4 max-w-[60%] rounded-2xl`}
-                            >
-                              {message.content}
-                              {/* <div>
+                            {message.content}
+                            {/* <div>
                                 {DateTime.fromISO(
                                   message.created_at
                                 ).toLocaleString(DateTime.DATETIME_SHORT)}
                               </div> */}
-                            </div>
                           </div>
-                        )
-                    )}
-                  <div ref={messagesEndRef} />
-                </div>
+                        </div>
+                      )
+                  )}
+                <div ref={messagesEndRef} />
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Render the chat input */}
-          {selectedMember && (
-            <div className="mt-6">
-              <div className="flex items-center p-2 border-t bg-transparent">
-                <input
-                  type="text"
-                  placeholder="Type a message..."
-                  className="flex-1 p-2 pl-4 outline-none rounded-full border border-gray-300 bg-transparent  focus:outline-none focus:border-gray-300 focus:ring-0  ring-0 "
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                />
-                <Send
-                  className="text-purple-500 hover:text-purple-600 ml-2 cursor-pointer"
-                  size={22}
-                  onClick={sendMessage}
-                />
-              </div>
+        {/* Render the chat input */}
+        {selectedMember && (
+          <div className="mt-6">
+            <div className="flex items-center p-2 border-t bg-transparent">
+              <input
+                type="text"
+                placeholder="Type a message..."
+                className="font-Raleway flex-1 p-2 pl-4 outline-none rounded-full border border-gray-300 bg-transparent  focus:outline-none focus:border-gray-300 focus:ring-0  ring-0 "
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+              />
+              <Send
+                className="text-purple-500 hover:text-purple-600 ml-2 cursor-pointer"
+                size={22}
+                onClick={sendMessage}
+              />
             </div>
-          )}
-          {!selectedMember && <div></div>}
+          </div>
+        )}
+        {!selectedMember && <div></div>}
+      </div>
+
+      <div className="w-[1px] opacity-10 bg-slate-600"></div>
+      <div className="w-1/3">
+        <div className="flex flex-row m-4">
+          <div className="font-Raleway text-[25px] grow text-[#202020]">
+            Directory
+          </div>
         </div>
-
-        <div className="w-[1px] opacity-10 bg-slate-600"></div>
-        <div className="w-1/3">
-          <div className="flex flex-row m-4">
-            <h2 className="grow">Directory</h2>
+        <div className="flex flex-row items-center m-4 gap-3">
+          <div className="font-Raleway text-[20px] text-[#202020]">
+            my co-workers
           </div>
-          <div className="flex flex-row items-center m-3 gap-3">
-            <div className="text-[14px]">Team Members</div>
-            <div className="flex flex-row w-5 h-5 items-center justify-center text-slate-700 text-[12px] rounded-full bg-slate-200">
-              <div>{avatars.length}</div>
+          <div className="flex flex-row w-5 h-5 items-center justify-center text-[#202020] text-[12px] rounded-full bg-slate-200">
+            <div>{avatars.length}</div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          {avatars.map((avatar) => (
+            <div
+              key={avatar.id} // Marouane Don't forget to include a unique key for each element in a loop
+              className="cursor-pointer"
+              onClick={() => setSelectedMember(avatar)}
+            >
+              <Member
+                image={avatar.avatar_url}
+                name={avatar.full_name}
+                job={avatar.job}
+              />
             </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            {avatars.map((avatar) => (
-              <div
-                key={avatar.id} // Marouane Don't forget to include a unique key for each element in a loop
-                className="cursor-pointer"
-                onClick={() => setSelectedMember(avatar)}
-              >
-                <Member
-                  image={avatar.avatar_url}
-                  name={avatar.full_name}
-                  job={avatar.job}
-                />
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </div>

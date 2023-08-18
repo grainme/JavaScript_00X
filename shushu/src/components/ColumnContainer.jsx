@@ -104,7 +104,7 @@ function ColumnContainer(props) {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-[#F5F5F5] rounded-2xl w-1/3 flex flex-col font-Poppins"
+      className="bg-[#F5F5F5] rounded-2xl w-1/3 flex flex-col font-Bricolage"
     >
       {/* Column title */}
       <div
@@ -118,7 +118,7 @@ function ColumnContainer(props) {
         "
       >
         <div className="flex flex-row justify-between items-center text-slate-900">
-          <div className="flex items-center grow gap-4 text-[20px] font-Poppins font-normal">
+          <div className="flex items-center grow gap-4 text-[20px] font-normal">
             <div
               className={`w-2 h-2 rounded-full ${
                 props.column.id === "todo"

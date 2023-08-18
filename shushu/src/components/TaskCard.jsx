@@ -381,17 +381,17 @@ function TaskCard(props) {
                 onClick={() => {
                   props.deleteTask(props.task.id);
                 }}
-                className="stroke-white hover:bg-red-400 hover:text-white bg-columnBackgroundColor p-2 rounded opacity-60 hover:opacity-100"
+                className="stroke-white hover:bg-red-500 hover:text-white bg-columnBackgroundColor p-2 rounded opacity-60 hover:opacity-100"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
           </div>
           {props.task.title && (
-            <div className="font-Bricolage text-[22px]">{title}</div>
+            <div className="font-Raleway text-[22px] font-[500]">{title}</div>
           )}
 
-          <div className="overflow-y-auto overflow-x-hidden whitespace-pre-wrap text-zinc-500 text-[12.5px] mt-1 mb-2">
+          <div className=" font-Raleway overflow-y-auto overflow-x-hidden whitespace-pre-wrap text-zinc-600 text-[13px] mt-1 mb-2">
             {description}
           </div>
 
@@ -415,13 +415,13 @@ function TaskCard(props) {
         style={customModalStyle}
       >
         {/* Title */}
-        <h1 className="text-[28px] mb-4 mt-2">{title}</h1>
+        <h1 className="text-[28px] mb-4 mt-2 font-Raleway">{title}</h1>
 
         {/* Labels Div*/}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3 font-Raleway">
           <div>
-            <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#202020]">
+            <div className="flex flex-row gap-5">
+              <div className="w-[7rem] flex flex-row gap-[.6rem] items-center text-[14px] text-[#202020]">
                 <Tag className="h-[14px] w-[14px]" />
                 Label
               </div>
@@ -441,8 +441,8 @@ function TaskCard(props) {
           </div>
 
           <div>
-            <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#202020]">
+            <div className="flex flex-row gap-5">
+              <div className="w-[7rem] flex flex-row gap-[.6rem] items-center text-[14px] text-[#202020]">
                 <Users className="h-[14px] w-[14px]" />
                 Assignee
               </div>
@@ -457,8 +457,8 @@ function TaskCard(props) {
           </div>
 
           <div>
-            <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#202020]">
+            <div className="flex flex-row gap-5">
+              <div className="w-[7rem] flex flex-row gap-[.6rem] items-center text-[14px] text-[#202020]">
                 <TrendingUp className="h-[14px] w-[14px]" />
                 Due Date
               </div>
@@ -478,8 +478,8 @@ function TaskCard(props) {
           </div>
 
           <div>
-            <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#202020]">
+            <div className="flex flex-row gap-5">
+              <div className="w-[7rem] flex flex-row gap-[.6rem] items-center text-[14px] text-[#202020]">
                 <CircleDot className="h-[14px] w-[14px]" />
                 Priority
               </div>
@@ -500,7 +500,7 @@ function TaskCard(props) {
             </div>
           </div>
         </div>
-        <div className="flex flex-row gap-5 mt-2 text-[15px] text-[#777777] ">
+        <div className="flex flex-row gap-5 mt-2 font-Raleway text-[15px] font-medium text-[#202020]">
           <div
             className="hover:text-[#7c63e8] cursor-pointer "
             onClick={() => {
@@ -527,12 +527,11 @@ function TaskCard(props) {
           </div>
         </div>
         {/* TextArea */}
-        <div className="w-full rounded-xl bg-[#F5F5F5] text-[14.8px] text-[#777777] flex flex-col">
-          {" "}
+        <div className="font-Raleway w-full rounded-xl bg-[#F5F5F5]  text-[#202020] flex flex-col">
           {textAreaType === "description" ? (
-            <div className=" w-full rounded-xl bg-[#F5F5F5] p-1 text-[14.8px]  text-[#777777] flex flex-col ">
+            <div className=" w-full rounded-xl bg-[#F5F5F5] p-1 flex flex-col ">
               <textarea
-                className="bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
+                className="text-[14px] bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
                 value={description}
                 autoFocus
                 placeholder="Task content here"
@@ -540,9 +539,9 @@ function TaskCard(props) {
               />
             </div>
           ) : textAreaType === "comment" ? (
-            <div className=" w-full rounded-xl bg-[#F5F5F5] p-1 text-[14.8px] text-[#777777] flex flex-col ">
+            <div className=" w-full rounded-xl  bg-[#F5F5F5] p-1 flex flex-col ">
               <textarea
-                className="bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
+                className="text-[14px] text-[#202020] bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
                 autoFocus
                 value={comment}
                 placeholder="Commentate here :)"
@@ -554,10 +553,9 @@ function TaskCard(props) {
               <div className="flex items-center justify-center w-full">
                 <label className="flex flex-col items-center justify-center w-full h-30 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 ">
                   <div className="flex flex-col items-center justify-center pt-7 pb-6">
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                      <span className="font-semibold">Click to upload</span> or
-                      drag and drop
-                    </p>
+                    <div className="mb-2 text-sm font-Raleway text-[15px] font-medium text-[#202020]">
+                      <span>Click to upload</span> or drag and drop
+                    </div>
                   </div>
                   <input
                     id="dropzone-file"
@@ -597,7 +595,7 @@ function TaskCard(props) {
           </div>
         </div>
         {textAreaType !== "upload" && (
-          <div className=" w-full rounded-xl flex flex-col gap-4  p-3 text-[14.8px] text-[#2d2d2d]">
+          <div className=" w-full rounded-xl flex flex-col gap-4  p-3 text-[14px] text-[#202020]">
             {Comments.map((comment, key) => {
               return (
                 <Comment

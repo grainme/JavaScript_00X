@@ -86,11 +86,11 @@ export function Dropdown() {
   }, [isDropdownOpen]);
 
   return (
-    <div className="m-4" ref={dropdownRef}>
+    <div className="m-4 mr-7 font-Bricolage" ref={dropdownRef}>
       <button
         id="dropdownAvatarNameButton"
         data-dropdown-toggle="dropdownAvatarName"
-        className="flex items-center text-sm font-medium text-gray-900 rounded-xl  md:mr-0  "
+        className="flex items-center text-sm font-medium text-gray-900 rounded-xl md:mr-0  "
         type="button"
         onClick={toggleDropdown}
         ref={profileRef} // Add a ref to the profile image
@@ -104,7 +104,7 @@ export function Dropdown() {
               src={imageUrl}
               alt="user photo"
             />{" "}
-            <span className="top-0 left-7 absolute  w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
+            <span className="top-0 left-7 absolute w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
           </div>
 
           <div className=" flex flex-col items-start ">
@@ -118,42 +118,35 @@ export function Dropdown() {
       {isDropdownOpen && (
         <div
           id="dropdownAvatarName"
-          className="flex flex-col items-start my-3 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-[8rem] absolute"
+          className="flex flex-col items-start my-3 z-10 bg-white divide-y  rounded-lg shadow absolute"
         >
           <ul
-            className="py-2 text-sm text-gray-700 dark:text-gray-200"
+            className="py-2 text-sm text-gray-700  w-[9rem] "
             aria-labelledby="dropdownAvatarNameButton"
           >
             <li>
-              <a
-                href="#"
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-              >
+              <a href="#" className="block px-4 py-2 hover:bg-gray-100 ">
                 Dashboard
               </a>
             </li>
             <li>
-              <a
-                href="#"
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-              >
+              <a href="#" className="block px-4 py-2 hover:bg-gray-100 ">
                 Settings
               </a>
             </li>
             <li>
-              <a
-                href="#"
-                className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-              >
+              <a href="#" className="block px-4 py-2 hover:bg-gray-100 ">
                 Teams
               </a>
             </li>
+            <li>
+              <div onClick={signOut} className="cursor-pointer ">
+                <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 ">
+                  Log out
+                </div>
+              </div>
+            </li>
           </ul>
-          <div onClick={signOut} className="py-2 cursor-pointer ">
-            <div className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
-              Log out
-            </div>
-          </div>
         </div>
       )}
     </div>

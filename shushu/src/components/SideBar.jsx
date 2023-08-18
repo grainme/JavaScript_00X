@@ -36,7 +36,7 @@ export function Sidebar() {
           </div>
           <div className="h-[.8px] bg-gray-300"></div>
         </div>
-        <ul className="mt-8 space-y-1 px-4 py-6 font-Poppins">
+        <ul className="mt-8 space-y-1 px-4 py-6 font-Bricolage">
           <ListItem
             icon={<HomeIcon className="h-5 w-5 text-[#787486]" />}
             text="Home"
@@ -64,12 +64,7 @@ export function Sidebar() {
           />
           <ListItem
             icon={<Settings className="h-5 w-5 text-[#787486]" />}
-            text="Settings"
-            to="/"
-          />
-          <ListItem
-            icon={<BookOpen className="h-5 w-5 text-[#787486]" />}
-            text="Documentation"
+            text="Support"
             to="/"
           />
         </ul>
