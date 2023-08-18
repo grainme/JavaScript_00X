@@ -8,7 +8,7 @@ export function CommentNotification() {
       role="alert"
     >
       <div className="flex items-center">
-        <span className="mb-1 text-sm font-semibold text-gray-900 dark:text-white">
+        <span className="mb-1 text-sm text-gray-900 dark:text-white">
           New Activity
         </span>
         <button
@@ -62,14 +62,12 @@ export function CommentNotification() {
             <span className="sr-only">Message icon</span>
           </span>
         </div>
-        <div className="ml-3 text-sm font-normal">
-          <div className="text-sm font-semibold text-gray-900 dark:text-white">
+        <div className="ml-3 text-sm">
+          <div className="text-sm  text-gray-900 dark:text-white">
             Saitama Kun
           </div>
-          <div className="text-sm font-normal">commmented on your task</div>
-          <span className="text-xs font-medium text-red-400 ">
-            a few seconds ago
-          </span>
+          <div className="text-sm">commmented on your task</div>
+          <span className="text-xs  text-red-400 ">a few seconds ago</span>
         </div>
       </div>
     </div>

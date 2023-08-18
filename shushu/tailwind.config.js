@@ -12,6 +12,8 @@ export default {
         Raleway: ["Raleway", "sans-serif"],
         openSans: ["Open Sans", "sans-serif"],
         clash: ["Clash Display", "sans-serif"],
+        Bricolage: ["Bricolage Grotesque", "sans-serif"],
+        Poppins: ["Poppins", "sans-serif"],
       },
     },
     variants: {

@@ -15,7 +15,7 @@ function ListItem({ icon, text, to }) {
     <li>
       <Link
         to={to}
-        className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700"
       >
         <div className="flex flex-row items-center space-x-3">
           {icon}
@@ -28,13 +28,15 @@ function ListItem({ icon, text, to }) {
 
 export function Sidebar() {
   return (
-    <div className="flex h-screen flex-col justify-between border-e">
-      <div className="px-4 py-6">
-        <span className="grid h-10 place-content-center rounded-lg">
-          <h1 className="text-2xl font-semibold font-clash">PomodoroKai</h1>
-        </span>
-
-        <ul className="mt-8 space-y-1">
+    <div className="flex h-[100vh] flex-col justify-between border-e">
+      <div className="py-6">
+        <div className="h-10 place-content-center rounded-lg ">
+          <div className="text-2xl font-semibold font-clash px-4 pb-5">
+            PomodoroKai
+          </div>
+          <div className="h-[.8px] bg-gray-300"></div>
+        </div>
+        <ul className="mt-8 space-y-1 px-4 py-6 font-Poppins">
           <ListItem
             icon={<HomeIcon className="h-5 w-5 text-[#787486]" />}
             text="Home"

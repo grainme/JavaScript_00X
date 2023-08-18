@@ -5,7 +5,7 @@ import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import debounce from "lodash/debounce";
 
 export function Avatars(props) {
-  const [Friends, setFriends] = useState([]); // Initialize with an empty array
+  const [Friends, setFriends] = useState([]);
   const [avatars, setAvatars] = useState([]);
   const supabase = useSupabaseClient();
   const user = useUser();
@@ -32,7 +32,7 @@ export function Avatars(props) {
       if (friendIds.length > 0) {
         const { data: avatarData, error: avatarError } = await supabase
           .from("profiles")
-          .select("avatar_url")
+          .select("*")
           .in("id", friendIds);
 
         if (avatarError) {
@@ -52,25 +52,25 @@ export function Avatars(props) {
   const debouncedFetchAvatars = debounce(fetchAvatars, 300);
 
   useEffect(() => {
-    if (user) {
-      debouncedFetchAvatars();
-      fetchAvatars();
-      supabase
-        .channel("table-db-changes")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "friend_relationships",
-          },
-          (payload) => {
-            fetchAvatars();
-          }
-        )
-        .subscribe();
-    }
-  }, [user]);
+    debouncedFetchAvatars();
+  }, [user?.id]);
+
+  supabase
+    .channel("table-db-changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "friend_relationships",
+      },
+      (payload) => {
+        fetchAvatars();
+      }
+    )
+    .subscribe();
+
+  console.log(avatars);
 
   return (
     <div className="flex items-center justify-center">

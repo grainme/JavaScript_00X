@@ -387,11 +387,13 @@ function TaskCard(props) {
               </button>
             </div>
           </div>
-          {props.task.title && <h1>{title}</h1>}
+          {props.task.title && (
+            <div className="font-Bricolage text-[22px]">{title}</div>
+          )}
 
-          <p className="overflow-y-auto overflow-x-hidden w-[280px] whitespace-pre-wrap text-zinc-500 text-xs font-normal">
+          <div className="overflow-y-auto overflow-x-hidden whitespace-pre-wrap text-zinc-500 text-[12.5px] mt-1 mb-2">
             {description}
-          </p>
+          </div>
 
           {props.task.images !== null && (
             <div className="rounded-lg overflow-hidden max-w-max h-[10rem]">
@@ -413,13 +415,13 @@ function TaskCard(props) {
         style={customModalStyle}
       >
         {/* Title */}
-        <h1 className="text-[28px] font-medium mb-4 mt-2">{title}</h1>
+        <h1 className="text-[28px] mb-4 mt-2">{title}</h1>
 
         {/* Labels Div*/}
         <div className="flex flex-col gap-2">
           <div>
             <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] font-medium text-[#202020]">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#202020]">
                 <Tag className="h-[14px] w-[14px]" />
                 Label
               </div>
@@ -440,7 +442,7 @@ function TaskCard(props) {
 
           <div>
             <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px]  font-medium text-[#202020]">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#202020]">
                 <Users className="h-[14px] w-[14px]" />
                 Assignee
               </div>
@@ -456,7 +458,7 @@ function TaskCard(props) {
 
           <div>
             <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] font-medium text-[#202020]">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#202020]">
                 <TrendingUp className="h-[14px] w-[14px]" />
                 Due Date
               </div>
@@ -477,7 +479,7 @@ function TaskCard(props) {
 
           <div>
             <div className="flex flex-row ">
-              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] font-medium text-[#202020]">
+              <div className="w-[7rem] flex flex-row gap-1 items-center text-[14px] text-[#202020]">
                 <CircleDot className="h-[14px] w-[14px]" />
                 Priority
               </div>
@@ -498,7 +500,7 @@ function TaskCard(props) {
             </div>
           </div>
         </div>
-        <div className="flex flex-row gap-5 mt-2 text-[15px] font-medium text-[#777777] ">
+        <div className="flex flex-row gap-5 mt-2 text-[15px] text-[#777777] ">
           <div
             className="hover:text-[#7c63e8] cursor-pointer "
             onClick={() => {

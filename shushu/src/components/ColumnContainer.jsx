@@ -104,7 +104,7 @@ function ColumnContainer(props) {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-[#F5F5F5] rounded-2xl w-1/3 flex flex-col"
+      className="bg-[#F5F5F5] rounded-2xl w-1/3 flex flex-col font-Poppins"
     >
       {/* Column title */}
       <div
@@ -115,11 +115,10 @@ function ColumnContainer(props) {
           rounded-b-none
           py-6
           pl-5
-          font-bold
         "
       >
-        <div className="flex flex-row justify-between items-center text-slate-900 text-base font-medium">
-          <div className="flex items-center grow gap-2 text-[19px]">
+        <div className="flex flex-row justify-between items-center text-slate-900">
+          <div className="flex items-center grow gap-4 text-[20px] font-Poppins font-normal">
             <div
               className={`w-2 h-2 rounded-full ${
                 props.column.id === "todo"
@@ -129,7 +128,7 @@ function ColumnContainer(props) {
                   : "bg-[#8BC48A]"
               }`}
             />
-            <h1>{props.column.title}</h1>
+            <div>{props.column.title}</div>
           </div>
           {props.column.id === "todo" && (
             <div className="flex flex-row gap-2 mr-5">
@@ -145,7 +144,7 @@ function ColumnContainer(props) {
               />
               {savingWorkspace && (
                 <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 w-[15rem] rounded-md m-auto mb-1 h-12 flex items-center justify-center text-zinc-100">
-                  <span className="text-[15px]">
+                  <span className="text-[15px] font-Bricolage">
                     {savingWorkspace === "success" && "Workspace saved :)"}
                     {savingWorkspace === "error" && "something is wrong"}
                     {savingWorkspace === "loading" && (
@@ -190,7 +189,7 @@ function ColumnContainer(props) {
       </div>
 
       {/* Column task container */}
-      <div className="flex flex-grow h-[28rem] flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
+      <div className="flex flex-grow h-[28rem] flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto ">
         <SortableContext items={tasksIds}>
           {props.tasks.map((task) => (
             <TaskCard
