@@ -5,6 +5,7 @@ import { ProfileSetup } from "./components/ProfileSetup";
 import { Waitlist } from "./pages/waitlist";
 import { Messages } from "./pages/messages";
 import { Wip } from "./pages/Wip";
+import { Pomodoro } from "./pages/Pomodoro";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/waitlist" element={<Waitlist />} />
         <Route path="/chat" element={<Messages />} />
         <Route path="/wip" element={<Wip />} />
+        <Route path="/pomodoro" element={<Pomodoro />} />
       </Routes>
     </Router>
   );

@@ -37,17 +37,17 @@ export function Sidebar() {
       <ul className="mt-8 space-y-7 px-3 py-6 font-Bricolage">
         <ListItem
           icon={<HomeIcon className="h-[1.6rem] w-[1.6rem] text-[#424242]" />}
-          to="/work"
+          to="/wip"
         />
         <ListItem
           icon={<Hourglass className="h-[1.6rem] w-[1.6rem] text-[#424242]" />}
-          to="/wip"
+          to="/pomodoro"
         />
         <ListItem
           icon={
             <KanbanSquare className="h-[1.6rem] w-[1.6rem] text-[#424242]" />
           }
-          to="/wip"
+          to="/work"
         />
         <ListItem
           icon={
