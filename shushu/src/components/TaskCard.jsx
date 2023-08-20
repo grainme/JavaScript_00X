@@ -3,16 +3,26 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState, memo } from "react";
-import { Trash2, Edit, Tag, CircleDot, TrendingUp, Users } from "lucide-react";
+import {
+  Trash2,
+  Edit,
+  Tag,
+  CircleDot,
+  TrendingUp,
+  Users,
+  X,
+} from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import ReactModal from "react-modal";
 import { Comment } from "./Comments";
 import { PriorityCard } from "./PriorityCard";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { FriendsDrop } from "./FriendsDropdown";
 import { AssigneeAvatars } from "./AssigneeAvtars";
 import { v4 as uuidv4 } from "uuid";
+import { supabase } from "../Client/supabaseClient";
+import { Link } from "react-router-dom";
 
 function TaskCard(props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
@@ -31,10 +41,9 @@ function TaskCard(props) {
   const [job, setJob] = useState("");
   const [username, setUsername] = useState("");
   const [Comments, setComments] = useState([]);
-  const [taskImgUrl, setTaskImgUrl] = useState("");
-  const [ImgHere, setImgHere] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-  const supabase = useSupabaseClient();
+  const [avatars, setAvatars] = useState([]);
+  const [ImagesInsideModal, setImagesInsideModal] = useState(props.task.images);
   const user = useUser();
 
   const CDNURL_TASK =
@@ -62,19 +71,7 @@ function TaskCard(props) {
     const imageUrl = CDNURL_TASK + "/" + data.path;
     setUploadedImageUrl(imageUrl);
 
-    // Fetch the current images array from the task
-    const { data: taskData, error: taskError } = await supabase
-      .from("tasks")
-      .select("images")
-      .eq("id", props.task.id)
-      .single();
-
-    if (taskError) {
-      console.error("Error fetching task data:", taskError);
-      return;
-    }
-
-    const currentImages = taskData.images || [];
+    const currentImages = props.task.images || [];
 
     // Update the images array with the new image URL
     const updatedImages = [...currentImages, imageUrl];
@@ -93,22 +90,6 @@ function TaskCard(props) {
     console.log("File uploaded and task updated successfully:", updatedTask);
   };
 
-  const fetchTaskImages = async () => {
-    // Fetch the current images array from the task
-    const { data: taskData, error: taskError } = await supabase
-      .from("tasks")
-      .select("images")
-      .eq("id", props.task.id);
-
-    if (taskData) {
-      const currentImages = taskData[0].images || [];
-      setTaskImgUrl(currentImages[0]);
-      setImgHere(true);
-    } else {
-      console.error("Error fetching task data:", taskError);
-    }
-  };
-
   const handleEditClick = () => {
     setIsEditing(!isEditing);
   };
@@ -119,7 +100,6 @@ function TaskCard(props) {
       const { data, error } = await supabase
         .from("comments")
         .select()
-        .eq("user_id", user?.id)
         .eq("task_id", props.task.id);
       if (error) {
         throw error;
@@ -153,7 +133,6 @@ function TaskCard(props) {
 
   useEffect(() => {
     retrieveComments();
-    fetchTaskImages();
     retrieveAvatar();
   }, [user?.id, props.task]);
 
@@ -181,16 +160,6 @@ function TaskCard(props) {
 
   async function pushCommentBase(taskId, comment) {
     try {
-      if (!supabase) {
-        console.error("Supabase client not initialized.");
-        return;
-      }
-
-      if (!taskId || !comment) {
-        console.error("Invalid taskId or comment.");
-        return;
-      }
-
       const { data, error } = await supabase.from("comments").insert([
         {
           task_id: taskId,
@@ -234,6 +203,96 @@ function TaskCard(props) {
     }
   }
 
+  useEffect(() => {
+    const fetchAvatars = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .in("id", props.task.assignee);
+
+        if (error) {
+          console.error("Error fetching avatars:", error);
+          return;
+        }
+
+        setAvatars(data);
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
+    };
+
+    if (props.task.assignee?.length > 0) {
+      fetchAvatars();
+    }
+  }, []);
+
+  async function removeImage(imageUrl) {
+    try {
+      const updatedImages = props.task.images.filter((img) => img !== imageUrl);
+      const { data, error } = await supabase
+        .from("tasks")
+        .update({ images: updatedImages })
+        .eq("id", props.task.id);
+
+      if (error) {
+        console.error("Error removing image:", error.message);
+        return;
+      }
+
+      console.log("Image removed successfully!");
+      // You might want to refresh your component's data after removing the image
+    } catch (error) {
+      console.error("Error removing image:", error);
+    }
+  }
+
+  const retrieveImages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("images")
+        .eq("id", props.task.id);
+
+      if (error) {
+        console.error("Error retrieving images:", error);
+        return;
+      }
+
+      // Update the images array in your task state
+      const updatedTask = { ...props.task, images: data[0].images };
+      // Update the task in the parent component's state or context
+      // Example: updateTask(updatedTask);
+
+      setImagesInsideModal(updatedTask.images);
+    } catch (error) {
+      console.error("Error retrieving images:", error);
+    }
+  };
+
+  useEffect(() => {
+    const channelB = supabase
+      .channel("schema-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          table: "tasks",
+          event: "*",
+          schema: "public",
+        },
+        (payload) => {
+          retrieveComments();
+          retrieveImages(); // Call retrieveImages when a change happens in the "tasks" table
+        }
+      )
+      .subscribe();
+
+    return () => {
+      // Unsubscribe the channel when the component unmounts
+      channelB.unsubscribe();
+    };
+  }, []);
+
   const handleInputChange = (e) => {
     setTitle(e.target.value);
   };
@@ -249,7 +308,6 @@ function TaskCard(props) {
   function saveChanges() {
     setIsEditing(false);
     editTask(props.task.title, title, description, dueDate, priority);
-    closeModal();
   }
 
   function cancelEdit() {
@@ -388,7 +446,7 @@ function TaskCard(props) {
             </div>
           </div>
           {props.task.title && (
-            <div className="font-Raleway text-[22px] font-[500]">{title}</div>
+            <div className="font-Raleway text-[21px] font-[500]">{title}</div>
           )}
 
           <div className=" font-Raleway overflow-y-auto overflow-x-hidden whitespace-pre-wrap text-zinc-600 text-[13px] mt-1 mb-2">
@@ -396,12 +454,21 @@ function TaskCard(props) {
           </div>
 
           {props.task.images !== null && (
-            <div className="rounded-lg overflow-hidden max-w-max h-[10rem]">
-              <img
-                src={props.task.images}
-                alt="Task Image"
-                className="max-w-1/2 max-h-1/2 object-contain"
-              />
+            <div className=" w-full rounded-xl flex flex-row gap-1 text-[14px] text-[#202020]">
+              {ImagesInsideModal.map((img, key) => {
+                return (
+                  <div
+                    key={key}
+                    className="h-[2.6rem] w-[2.6rem] rounded-lg overflow-hidden"
+                  >
+                    <img
+                      src={img}
+                      className="object-cover h-full w-full"
+                      alt={`Image ${key}`}
+                    />
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -449,7 +516,7 @@ function TaskCard(props) {
               <div className="flex flex-row gap-2 items-center  text-[14px] ">
                 <AssigneeAvatars
                   classy="w-7 h-7 border-2 border-white rounded-full"
-                  assignees={props.task.assignee}
+                  avatars={avatars}
                 />
                 <FriendsDrop taskId={props.task.id} />
               </div>
@@ -565,15 +632,6 @@ function TaskCard(props) {
                   />
                 </label>
               </div>
-              {uploadedImageUrl && (
-                <div className="rounded-lg overflow-hidden max-w-max  mt-2">
-                  <img
-                    src={uploadedImageUrl}
-                    alt="Uploaded Task Image"
-                    className="max-w-1/2 max-h-1/2 object-contain"
-                  />
-                </div>
-              )}
             </div>
           )}
           <div className="flex justify-between items-end">
@@ -594,7 +652,7 @@ function TaskCard(props) {
             ) : null}
           </div>
         </div>
-        {textAreaType !== "upload" && (
+        {textAreaType !== "upload" ? (
           <div className=" w-full rounded-xl flex flex-col gap-4  p-3 text-[14px] text-[#202020]">
             {Comments.map((comment, key) => {
               return (
@@ -602,11 +660,35 @@ function TaskCard(props) {
                   commentId={comment.id}
                   removeComment={removeComment}
                   dateComment={comment.cmt_date}
-                  profile={imageUrl}
-                  username={username}
+                  comment_author={comment.user_id}
                   content={comment.content}
                   key={key}
                 />
+              );
+            })}
+          </div>
+        ) : (
+          <div className="w-full rounded-xl flex flex-row gap-2 p-3 text-[14px] text-[#202020]">
+            {ImagesInsideModal.map((img, key) => {
+              return (
+                <div
+                  key={key}
+                  className="relative h-[3.5rem] w-[3.5rem] rounded-lg overflow-hidden"
+                >
+                  <Link to={img}>
+                    <img
+                      src={img}
+                      className="object-cover h-full w-full"
+                      alt={`Image ${key}`}
+                    />
+                  </Link>
+                  <div
+                    className="absolute top-0 right-0 p-1 cursor-pointer"
+                    onClick={() => removeImage(img)}
+                  >
+                    <X className="text-white hover:text-red-400" size={20} />
+                  </div>
+                </div>
               );
             })}
           </div>

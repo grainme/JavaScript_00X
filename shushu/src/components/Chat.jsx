@@ -5,7 +5,8 @@ import { Member } from "./TeamMember";
 import { Send } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
 import { useEffect, useState, useRef } from "react";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
+import { supabase } from "../Client/supabaseClient";
 import debounce from "lodash/debounce";
 import { DateTime } from "luxon";
 
@@ -14,9 +15,9 @@ export function Chat() {
   const [selectedMember, setSelectedMember] = useState(null);
   const [messageInput, setMessageInput] = useState("");
   const [messagesData, setMessageData] = useState();
-  const supabase = useSupabaseClient();
   const user = useUser();
   const messagesEndRef = useRef(null);
+  const [Online, setOnline] = useState(false);
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -117,8 +118,6 @@ export function Chat() {
           return;
         }
 
-        // Process and set messagesData in your state
-        console.log(messagesData);
         setMessageData(messagesData);
       }
     } catch (error) {
@@ -154,18 +153,18 @@ export function Chat() {
       <div className="w-[1px] opacity-10 bg-slate-600"></div>
       <div className="w-2/3">
         {selectedMember && (
-          <div className="flex flex-col m-4 h-[94%]">
+          <div className="flex flex-col m-4 h-[75vh]">
             {/* Render the chat messages here */}
-            <div className="flex flex-col flex-1 gap-4 ml-4  overflow-y-auto max-h-[calc(100vh - 150px)]">
+            <div className="flex flex-col flex-1 gap-4 ml-4 overflow-y-auto max-h-[calc(100vh - 150px)]">
               {" "}
               {/* Example chat message */}
               <ChatMessage
                 image={selectedMember.avatar_url}
                 name={selectedMember.full_name}
-                LastMessage="Online"
+                status={user?.last_sign_in_at}
               />
               <div className="flex-grow"></div>
-              <div className=" font-Raleway flex flex-col gap-4 ml-4 text-[14px] text-[#202020]">
+              <div className=" font-Raleway flex flex-col gap-4 ml-4 mr-7 text-[14px] text-[#202020]">
                 {messagesData &&
                   messagesData.map(
                     (message, key) =>
@@ -235,7 +234,7 @@ export function Chat() {
         </div>
         <div className="flex flex-row items-center m-4 gap-3">
           <div className="font-Raleway text-[20px] text-[#202020]">
-            my co-workers
+            my teammates
           </div>
           <div className="flex flex-row w-5 h-5 items-center justify-center text-[#202020] text-[12px] rounded-full bg-slate-200">
             <div>{avatars.length}</div>

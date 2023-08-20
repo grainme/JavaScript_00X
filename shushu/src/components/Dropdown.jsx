@@ -2,19 +2,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
+import { supabase } from "../Client/supabaseClient";
 
 export function Dropdown() {
   const navigate = useNavigate();
-  const supabase = useSupabaseClient();
   const user = useUser();
-  const [imageUrl, setImageUrl] = useState("");
   const [job, setJob] = useState("");
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [imageUrl, setImageUrl] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const profileRef = useRef(null);
   const dropdownRef = useRef(null);
+
+  // Load user data from LocalStorage if available
+  useEffect(() => {
+    const localData = localStorage.getItem("userData");
+    if (localData) {
+      const { avatar_url, job, username } = JSON.parse(localData);
+      setImageUrl(avatar_url);
+      setJob(job);
+      setUsername(username);
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     // Fetch user data when the component mounts
@@ -34,9 +46,12 @@ export function Dropdown() {
         setJob(data?.job);
         setUsername(data?.username);
         setIsLoading(false);
+
+        // Save user data to LocalStorage
+        localStorage.setItem("userData", JSON.stringify(data));
       } catch (error) {
         console.error("Error retrieving user data:", error);
-        setIsLoading(false); // Ensure loading state is updated even if an error occurs
+        setIsLoading(false);
       }
     };
 

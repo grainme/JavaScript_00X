@@ -4,6 +4,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { ProfileSetup } from "./components/ProfileSetup";
 import { Waitlist } from "./pages/waitlist";
 import { Messages } from "./pages/messages";
+import { Wip } from "./pages/Wip";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/setup" element={<ProfileSetup />} />
         <Route path="/waitlist" element={<Waitlist />} />
         <Route path="/chat" element={<Messages />} />
+        <Route path="/wip" element={<Wip />} />
       </Routes>
     </Router>
   );

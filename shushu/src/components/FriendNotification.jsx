@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { useState, useEffect } from "react";
+import { supabase } from "../Client/supabaseClient";
 
 export function FriendNotif(props) {
-  const supabase = useSupabaseClient();
   const user = useUser();
 
   const [gotcha, setGotcha] = useState(false);

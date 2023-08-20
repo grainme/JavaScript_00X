@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 import debounce from "lodash/debounce";
+import { supabase } from "../Client/supabaseClient";
 
 export function Avatars(props) {
   const [Friends, setFriends] = useState([]);
   const [avatars, setAvatars] = useState([]);
-  const supabase = useSupabaseClient();
   const user = useUser();
 
   const fetchAvatars = async () => {

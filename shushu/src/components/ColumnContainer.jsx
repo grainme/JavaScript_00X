@@ -5,11 +5,10 @@ import { PlusIcon, Save } from "lucide-react";
 import { CSS } from "@dnd-kit/utilities";
 import { useMemo, useState } from "react";
 import TaskCard from "./TaskCard";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { supabase } from "../Client/supabaseClient";
 
 function ColumnContainer(props) {
   const [editMode, setEditMode] = useState(false);
-  const supabase = useSupabaseClient();
   const [savingWorkspace, setSavingWorkspace] = useState(null);
 
   const showNotification = async () => {

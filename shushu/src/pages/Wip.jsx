@@ -1,10 +1,9 @@
-import { Chat } from "../components/Chat";
 import { Sidebar } from "../components/SideBar";
 import { SearchBar } from "../components/SearchBar";
 import { Icons } from "../components/Icons";
 import { Dropdown } from "../components/Dropdown";
 
-export function Messages() {
+export function Wip() {
   return (
     <div className="flex flex-row bg-[#FFFEFB]">
       <div>
@@ -21,7 +20,9 @@ export function Messages() {
           </div>
         </div>
         <div className="border-b"></div>
-        <Chat />
+        <div className="m-auto font-Bricolage font-semibold text-[100px]">
+          WORK IN PROGRESS :)
+        </div>
       </div>
     </div>
   );

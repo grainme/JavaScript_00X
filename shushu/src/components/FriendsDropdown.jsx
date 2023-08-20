@@ -1,16 +1,11 @@
-/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { PlusCircle } from "lucide-react";
 import debounce from "lodash/debounce";
+import { supabase } from "../Client/supabaseClient";
 
 export function FriendsDrop(props) {
-  const navigate = useNavigate();
-  const supabase = useSupabaseClient();
   const user = useUser();
   const [imageUrl, setImageUrl] = useState("");
   const [job, setJob] = useState("");
@@ -22,6 +17,7 @@ export function FriendsDrop(props) {
   const [Friends, setFriends] = useState([]); // Initialize with an empty array
   const [avatars, setAvatars] = useState([]);
   const [names, setNames] = useState([]); // New state for storing friend names
+  const [infos, setInfos] = useState([]);
 
   const fetchAvatars = async () => {
     try {
@@ -45,7 +41,7 @@ export function FriendsDrop(props) {
       if (friendIds.length > 0) {
         const { data: avatarData, error: avatarError } = await supabase
           .from("profiles")
-          .select("avatar_url, username") // Fetch both avatar_url and name
+          .select() // Fetch both avatar_url and name
           .in("id", friendIds);
 
         if (avatarError) {
@@ -59,6 +55,9 @@ export function FriendsDrop(props) {
 
           const friendNames = avatarData.map((entry) => entry.username);
           setNames(friendNames);
+
+          const friendInfos = avatarData.map((entry) => entry);
+          setInfos(friendInfos);
         }
       }
     } catch (error) {
@@ -81,7 +80,7 @@ export function FriendsDrop(props) {
             schema: "public",
             table: "friend_relationships",
           },
-          (payload) => {
+          () => {
             fetchAvatars();
           }
         )
@@ -146,12 +145,13 @@ export function FriendsDrop(props) {
       document.removeEventListener("click", handleOutsideClick);
     };
   }, [isDropdownOpen]);
-  const addFriendToTask = async (name, avatar) => {
+
+  const addFriendToTask = async (infos) => {
     try {
       // Get the current task's assignee array
       const { data: taskData, error: taskError } = await supabase
         .from("tasks")
-        .select("assignee")
+        .select()
         .eq("id", props.taskId)
         .single();
 
@@ -162,7 +162,7 @@ export function FriendsDrop(props) {
 
       // Convert assignee JSON array to a JavaScript array
       const assigneeArray = taskData.assignee || [];
-      const newAssignee = { name: name, avatar: avatar };
+      const newAssignee = infos.id;
 
       // Modify the assignee array and update it in the database
       const updatedAssignees = [...assigneeArray, newAssignee];
@@ -173,8 +173,8 @@ export function FriendsDrop(props) {
         .eq("id", props.taskId);
 
       // Close the dropdown after adding a friend to the task
-      setIsDropdownOpen(false);
       console.log("Task assignees updated in the database");
+      setIsDropdownOpen(false);
     } catch (error) {
       console.error("Error updating task assignees:", error);
     }
@@ -202,10 +202,7 @@ export function FriendsDrop(props) {
             aria-labelledby="dropdownAvatarNameButton"
           >
             {Friends.map((friend, index) => (
-              <li
-                key={friend.id}
-                onClick={() => addFriendToTask(names[index], avatars[index])}
-              >
+              <li key={friend.id} onClick={() => addFriendToTask(infos[index])}>
                 <a
                   href="#"
                   className="flex flex-row justify-start items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"

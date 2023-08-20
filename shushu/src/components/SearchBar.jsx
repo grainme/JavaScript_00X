@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { Search } from "lucide-react";
+import { supabase } from "../Client/supabaseClient";
 
 export function SearchBar() {
   const [friendMail, setFriendMail] = useState("");
-  const supabase = useSupabaseClient();
   const user = useUser();
   const [notification, setNotification] = useState(null);
 

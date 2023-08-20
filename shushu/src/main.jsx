@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { supabase } from "./components/supabaseClient.jsx";
+import { supabase } from "./Client/supabaseClient";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState } from "react";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { TextInput, FileInput, Label, Toast } from "flowbite-react";
 import { Flame, Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { supabase } from "../Client/supabaseClient";
 
 export function ProfileSetup() {
   const navigate = useNavigate();
-  const supabase = useSupabaseClient();
   const user = useUser();
   const [Avatar, setAvatar] = useState(null);
   const [username, setUsername] = useState(null);

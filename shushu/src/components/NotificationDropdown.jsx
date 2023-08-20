@@ -2,15 +2,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { supabase } from "../Client/supabaseClient";
 import { FriendNotif } from "./FriendNotification";
 import { CommentNotification } from "./CommentNotification";
+import { useUser } from "@supabase/auth-helpers-react";
 
 export const NotificationDropdown = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
-  const supabase = useSupabaseClient();
   const user = useUser();
   const dropdownRef = useRef(null);
 

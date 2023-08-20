@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useMemo } from "react";
-import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useUser } from "@supabase/auth-helpers-react";
+import { supabase } from "../Client/supabaseClient";
 import {
   DndContext,
   DragOverlay,
@@ -21,7 +22,6 @@ const defaultColumns = [
 ];
 
 export function KanbanBoard() {
-  const supabase = useSupabaseClient();
   const user = useUser();
   const [columns, setColumns] = useState(defaultColumns);
   const columnIds = useMemo(() => columns.map((col) => col.id), [columns]);
@@ -37,15 +37,16 @@ export function KanbanBoard() {
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("avatar_url")
-          .eq("id", user?.id);
-        setUserAvatar(data[0]?.avatar_url);
+          .select()
+          .eq("id", user?.id)
+          .single();
+        setUserAvatar(data.avatar_url);
       } catch (error) {
         console.error(error);
       }
     };
     checkAvatar();
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     let subscription;
@@ -76,15 +77,18 @@ export function KanbanBoard() {
     };
   }, [user?.id]);
 
-  const getTasksForUser = async (userUID) => {
+  const getTasksForUser = async () => {
+    const userId = user?.id;
     try {
       const { data, error } = await supabase
         .from("tasks")
-        .select()
-        .eq("user_id", userUID);
+        .select("*")
+        .contains("assignee", [userId]); // Note: Pass an array with user's ID
+
       if (error) {
         throw error;
       }
+
       setTasksUser(data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -114,7 +118,7 @@ export function KanbanBoard() {
         user_id: user?.id,
         priority: "Low",
         due_date: new Date(),
-        assignee: [{ name: user?.id, avatar: userAvatar }],
+        assignee: [user?.id],
       };
       const { data, error } = await supabase.from("tasks").insert([newTask]);
       if (error) {
@@ -175,14 +179,6 @@ export function KanbanBoard() {
     if (activeId === overId) {
       return;
     }
-
-    // This effect is not good but let's keep in case ;)
-    // setColumns((prevColumns) => {
-    //   const activeIndex = prevColumns.findIndex((col) => col.id === activeId);
-    //   const overIndex = prevColumns.findIndex((col) => col.id === overId);
-
-    //   return arrayMove(prevColumns, activeIndex, overIndex);
-    // });
   }
 
   function onDragOver(event) {
