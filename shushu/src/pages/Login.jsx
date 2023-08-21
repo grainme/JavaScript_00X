@@ -72,6 +72,7 @@ export function Login() {
                         backgroundColor: "black",
                       },
                       input: {
+                        
                         width: "100%",
                         // Add your input styles here
                       },

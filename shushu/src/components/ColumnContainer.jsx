@@ -31,35 +31,30 @@ function ColumnContainer(props) {
     return props.tasks.map((task) => task.id);
   }, [props.tasks]);
 
-  async function updateTaskStatus(taskId, newStatus) {
-    try {
-      const { data, error } = await supabase
-        .from("tasks")
-        .update({ status: newStatus })
-        .eq("id", taskId);
-
-      if (error) {
-        showNotification("error");
-        throw error;
-      } else {
-        showNotification("success");
-      }
-    } catch (error) {
-      console.error("Error updating task status:", error);
-    }
-  }
-
-  // Iterate over the movedTasks array and update task statuses
-  function updateMovedTasksStatus() {
+  async function updateMovedTasksStatus() {
     try {
       setSavingWorkspace("loading");
       for (const movedTask of props.movedTasks) {
-        updateTaskStatus(movedTask.taskId, movedTask.finalStatus);
+        try {
+          const { data, error } = await supabase
+            .from("tasks")
+            .update({ status: movedTask.finalStatus }) // Use an object to specify the update
+            .eq("id", movedTask.taskId);
+
+          if (error) {
+            showNotification("error");
+            throw error;
+          } else {
+            showNotification("success");
+          }
+        } catch (error) {
+          console.error("Error updating task status:", error);
+        }
       }
-      console.log("check");
+      setSavingWorkspace("idle"); // Reset the state after all tasks are processed
       showNotification("success");
     } catch (error) {
-      console.log("Error : ", error);
+      console.log("Error: ", error);
       showNotification("error");
     }
   }

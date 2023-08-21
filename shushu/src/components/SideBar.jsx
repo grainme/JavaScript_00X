@@ -40,14 +40,14 @@ export function Sidebar() {
           to="/wip"
         />
         <ListItem
-          icon={<Hourglass className="h-[1.6rem] w-[1.6rem] text-[#424242]" />}
-          to="/pomodoro"
-        />
-        <ListItem
           icon={
             <KanbanSquare className="h-[1.6rem] w-[1.6rem] text-[#424242]" />
           }
           to="/work"
+        />
+        <ListItem
+          icon={<Hourglass className="h-[1.6rem] w-[1.6rem] text-[#424242]" />}
+          to="/pomodoro"
         />
         <ListItem
           icon={

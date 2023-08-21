@@ -453,7 +453,7 @@ function TaskCard(props) {
             {description}
           </div>
 
-          {props.task.images !== null && (
+          {props.task?.images !== null && (
             <div className=" w-full rounded-xl flex flex-row gap-1 text-[14px] text-[#202020]">
               {ImagesInsideModal.map((img, key) => {
                 return (
@@ -669,28 +669,29 @@ function TaskCard(props) {
           </div>
         ) : (
           <div className="w-full rounded-xl flex flex-row gap-2 p-3 text-[14px] text-[#202020]">
-            {ImagesInsideModal.map((img, key) => {
-              return (
-                <div
-                  key={key}
-                  className="relative h-[3.5rem] w-[3.5rem] rounded-lg overflow-hidden"
-                >
-                  <Link to={img}>
-                    <img
-                      src={img}
-                      className="object-cover h-full w-full"
-                      alt={`Image ${key}`}
-                    />
-                  </Link>
+            {props.task?.images !== null &&
+              ImagesInsideModal.map((img, key) => {
+                return (
                   <div
-                    className="absolute top-0 right-0 p-1 cursor-pointer"
-                    onClick={() => removeImage(img)}
+                    key={key}
+                    className="relative h-[3.5rem] w-[3.5rem] rounded-lg overflow-hidden"
                   >
-                    <X className="text-white hover:text-red-400" size={20} />
+                    <Link to={img}>
+                      <img
+                        src={img}
+                        className="object-cover h-full w-full"
+                        alt={`Image ${key}`}
+                      />
+                    </Link>
+                    <div
+                      className="absolute top-0 right-0 p-1 cursor-pointer"
+                      onClick={() => removeImage(img)}
+                    >
+                      <X className="text-white hover:text-red-400" size={20} />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         )}
       </ReactModal>

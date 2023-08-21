@@ -10,8 +10,6 @@ export function Pomodoro() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [formattedTime, setFormattedTime] = useState("25:00"); // Initial time
-  const [tasks, setTasks] = useState([]);
-  const [taskInputValue, setTaskInputValue] = useState("");
 
   useEffect(() => {
     let animationFrameId;
