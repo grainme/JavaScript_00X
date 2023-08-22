@@ -105,6 +105,7 @@ export function KanbanBoard() {
       dueDate: task.due_date,
       images: task.images,
       assignee: task.assignee,
+      tags: task.tags,
     }));
     setTasks(newTasks);
   }, [tasksUser]);

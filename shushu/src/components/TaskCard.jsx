@@ -23,6 +23,7 @@ import { AssigneeAvatars } from "./AssigneeAvtars";
 import { v4 as uuidv4 } from "uuid";
 import { supabase } from "../Client/supabaseClient";
 import { Link } from "react-router-dom";
+import { HashTags } from "./Hashtags";
 
 function TaskCard(props) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
@@ -44,6 +45,8 @@ function TaskCard(props) {
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [avatars, setAvatars] = useState([]);
   const [ImagesInsideModal, setImagesInsideModal] = useState(props.task.images);
+  const [tag, setTag] = useState();
+  const [Tags, setTags] = useState([]);
   const user = useUser();
 
   const CDNURL_TASK =
@@ -140,21 +143,44 @@ function TaskCard(props) {
     oldTask,
     newTitle,
     newDescription,
-    newDue_Data,
-    newPriority
+    newDueDate,
+    newPriority,
+    newTag
   ) {
-    const { data, error } = await supabase
+    // Fetch the existing task data from the database
+    const { data: existingData, error: fetchError } = await supabase
       .from("tasks")
-      .update({
-        title: newTitle,
-        description: newDescription,
-        due_date: newDue_Data,
-        priority: newPriority,
-      })
-      .eq("id", props.task.id);
-    if (error) {
-      console.error("Error updating user:", error.message);
-      return;
+      .select()
+      .eq("id", props.task.id)
+      .single();
+
+    if (fetchError) {
+      // Handle the fetch error
+    } else {
+      // Get the existing tags from the fetched data
+      const oldTags = existingData.tags || [];
+
+      // Create an updatedTags array by adding the new tag
+      const updatedTags = [...oldTags, newTag]; // This will ensure uniqueness
+
+      // Update the task in the database with the modified data
+      const { data: updateData, error: updateError } = await supabase
+        .from("tasks")
+        .update({
+          title: newTitle,
+          description: newDescription,
+          due_date: newDueDate,
+          priority: newPriority,
+          tags: updatedTags,
+        })
+        .eq("id", props.task.id)
+        .select();
+
+      if (updateData) {
+        setTags(updateData);
+      } else {
+        console.error("Error updating task:", updateError);
+      }
     }
   }
 
@@ -307,7 +333,7 @@ function TaskCard(props) {
 
   function saveChanges() {
     setIsEditing(false);
-    editTask(props.task.title, title, description, dueDate, priority);
+    editTask(props.task.title, title, description, dueDate, priority, tag);
   }
 
   function cancelEdit() {
@@ -318,6 +344,10 @@ function TaskCard(props) {
 
   function handleComment(event) {
     setComment(event.target.value);
+  }
+
+  function handletags(event) {
+    setTag(event.target.value);
   }
 
   const handleInputKeyPress = (e) => {
@@ -427,7 +457,7 @@ function TaskCard(props) {
       >
         <div className="flex flex-col gap-1 pl-2 w-[300px] flex-grow">
           <div className="flex flex-row items-center justify-between">
-            <PriorityCard priority={props.task.priority} className="grow" />
+            <PriorityCard priority={props.task.priority} />
             <div>
               <button
                 onClick={toggleEditMode}
@@ -454,7 +484,7 @@ function TaskCard(props) {
           </div>
 
           {props.task?.images !== null && (
-            <div className=" w-full rounded-xl flex flex-row gap-1 text-[14px] text-[#202020]">
+            <div className="mb-2 w-full rounded-xl flex flex-row gap-1 text-[14px] text-[#202020]">
               {ImagesInsideModal.map((img, key) => {
                 return (
                   <div
@@ -471,6 +501,12 @@ function TaskCard(props) {
               })}
             </div>
           )}
+          <div className="grow flex flex-row">
+            {props.task.tags !== null &&
+              props.task.tags.map((tag, key) => {
+                return <HashTags key={key} tag={tag} />;
+              })}
+          </div>
         </div>
       </div>
 
@@ -592,6 +628,14 @@ function TaskCard(props) {
           >
             Upload
           </div>
+          <div
+            className="hover:text-[#7c63e8] cursor-pointer "
+            onClick={() => {
+              setTextAreaType("hashtags");
+            }}
+          >
+            Hashtags
+          </div>
         </div>
         {/* TextArea */}
         <div className="font-Raleway w-full rounded-xl bg-[#F5F5F5]  text-[#202020] flex flex-col">
@@ -613,6 +657,16 @@ function TaskCard(props) {
                 value={comment}
                 placeholder="Commentate here :)"
                 onChange={handleComment}
+              />
+            </div>
+          ) : textAreaType === "hashtags" ? (
+            <div className=" w-full rounded-xl  bg-[#F5F5F5] p-1 flex flex-col ">
+              <input
+                className="text-[14px] h-[3rem] p-5 text-[#202020] bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
+                autoFocus
+                // value={tag}
+                placeholder="Add tags to your tasks"
+                onChange={handletags}
               />
             </div>
           ) : (
@@ -652,7 +706,7 @@ function TaskCard(props) {
             ) : null}
           </div>
         </div>
-        {textAreaType !== "upload" ? (
+        {textAreaType !== "upload" && textAreaType !== "hashtags" ? (
           <div className=" w-full rounded-xl flex flex-col gap-4  p-3 text-[14px] text-[#202020]">
             {Comments.map((comment, key) => {
               return (
@@ -668,31 +722,36 @@ function TaskCard(props) {
             })}
           </div>
         ) : (
-          <div className="w-full rounded-xl flex flex-row gap-2 p-3 text-[14px] text-[#202020]">
-            {props.task?.images !== null &&
-              ImagesInsideModal.map((img, key) => {
-                return (
-                  <div
-                    key={key}
-                    className="relative h-[3.5rem] w-[3.5rem] rounded-lg overflow-hidden"
-                  >
-                    <Link to={img}>
-                      <img
-                        src={img}
-                        className="object-cover h-full w-full"
-                        alt={`Image ${key}`}
-                      />
-                    </Link>
+          textAreaType !== "hashtags" && (
+            <div className="w-full rounded-xl flex flex-row gap-2 p-3 text-[14px] text-[#202020]">
+              {props.task?.images !== null &&
+                ImagesInsideModal.map((img, key) => {
+                  return (
                     <div
-                      className="absolute top-0 right-0 p-1 cursor-pointer"
-                      onClick={() => removeImage(img)}
+                      key={key}
+                      className="relative h-[3.5rem] w-[3.5rem] rounded-lg overflow-hidden"
                     >
-                      <X className="text-white hover:text-red-400" size={20} />
+                      <Link to={img}>
+                        <img
+                          src={img}
+                          className="object-cover h-full w-full"
+                          alt={`Image ${key}`}
+                        />
+                      </Link>
+                      <div
+                        className="absolute top-0 right-0 p-1 cursor-pointer"
+                        onClick={() => removeImage(img)}
+                      >
+                        <X
+                          className="text-white hover:text-red-400"
+                          size={20}
+                        />
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-          </div>
+                  );
+                })}
+            </div>
+          )
         )}
       </ReactModal>
     </>

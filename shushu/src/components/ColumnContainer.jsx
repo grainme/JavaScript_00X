@@ -116,9 +116,9 @@ function ColumnContainer(props) {
             <div
               className={`w-2 h-2 rounded-full ${
                 props.column.id === "todo"
-                  ? "bg-indigo-600"
+                  ? "bg-red-500"
                   : props.column.id === "doing"
-                  ? "bg-amber-500"
+                  ? "bg-blue-500"
                   : "bg-[#8BC48A]"
               }`}
             />
@@ -174,9 +174,9 @@ function ColumnContainer(props) {
       </div>
       <div className="m-3">
         {props.column.id === "todo" ? (
-          <div className=" h-[2px] bg-indigo-600 rounded-sm" />
+          <div className=" h-[2px] bg-red-500 rounded-sm" />
         ) : props.column.id === "doing" ? (
-          <div className=" h-[2px] bg-amber-500 rounded-sm" />
+          <div className=" h-[2px] bg-blue-500 rounded-sm" />
         ) : (
           <div className=" h-[2px] bg-[#8BC48A] rounded-sm" />
         )}
