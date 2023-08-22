@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-unused-vars */
@@ -11,6 +12,8 @@ import {
   TrendingUp,
   Users,
   X,
+  MessageSquare,
+  Paperclip,
 } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -40,10 +43,9 @@ function TaskCard(props) {
   const [priority, setPriority] = useState(props.task.priority);
   const [imageUrl, setImageUrl] = useState("");
   const [job, setJob] = useState("");
-  const [username, setUsername] = useState("");
   const [Comments, setComments] = useState([]);
+  const [username, setUsername] = useState("");
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-  const [avatars, setAvatars] = useState([]);
   const [ImagesInsideModal, setImagesInsideModal] = useState(props.task.images);
   const [tag, setTag] = useState();
   const [Tags, setTags] = useState([]);
@@ -97,22 +99,6 @@ function TaskCard(props) {
     setIsEditing(!isEditing);
   };
 
-  const retrieveComments = async () => {
-    try {
-      // Get the public URL of the avatar image from Supabase storage
-      const { data, error } = await supabase
-        .from("comments")
-        .select()
-        .eq("task_id", props.task.id);
-      if (error) {
-        throw error;
-      }
-      setComments(data);
-    } catch (error) {
-      console.error("Error retrieving Comments:", error);
-    }
-  };
-
   const retrieveAvatar = async () => {
     try {
       // Get the public URL of the avatar image from Supabase storage
@@ -125,6 +111,7 @@ function TaskCard(props) {
       if (error) {
         throw error;
       }
+
       // Now you have the avatar_url from the profiles table
       setImageUrl(data?.avatar_url);
       setJob(data?.job);
@@ -135,9 +122,8 @@ function TaskCard(props) {
   };
 
   useEffect(() => {
-    retrieveComments();
     retrieveAvatar();
-  }, [user?.id, props.task]);
+  }, []);
 
   async function editTask(
     oldTask,
@@ -160,8 +146,8 @@ function TaskCard(props) {
       // Get the existing tags from the fetched data
       const oldTags = existingData.tags || [];
 
-      // Create an updatedTags array by adding the new tag
-      const updatedTags = [...oldTags, newTag]; // This will ensure uniqueness
+      // Create an updatedTags array by adding the new tag if it's not null
+      const updatedTags = newTag.length !== 0 ? [...oldTags, newTag] : oldTags;
 
       // Update the task in the database with the modified data
       const { data: updateData, error: updateError } = await supabase
@@ -183,6 +169,22 @@ function TaskCard(props) {
       }
     }
   }
+
+  const retrieveComments = async (props) => {
+    try {
+      // Get the public URL of the avatar image from Supabase storage
+      const { data, error } = await supabase
+        .from("comments")
+        .select()
+        .eq("task_id", props.task.id);
+      if (error) {
+        throw error;
+      }
+      setComments(data);
+    } catch (error) {
+      console.error("Error retrieving Comments:", error);
+    }
+  };
 
   async function pushCommentBase(taskId, comment) {
     try {
@@ -228,30 +230,6 @@ function TaskCard(props) {
       console.error("Error removing comment:", error);
     }
   }
-
-  useEffect(() => {
-    const fetchAvatars = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("avatar_url")
-          .in("id", props.task.assignee);
-
-        if (error) {
-          console.error("Error fetching avatars:", error);
-          return;
-        }
-
-        setAvatars(data);
-      } catch (error) {
-        console.error("An error occurred:", error);
-      }
-    };
-
-    if (props.task.assignee?.length > 0) {
-      fetchAvatars();
-    }
-  }, []);
 
   async function removeImage(imageUrl) {
     try {
@@ -440,6 +418,8 @@ function TaskCard(props) {
     );
   }
 
+  console.log(props.task.Comments);
+
   return (
     <>
       <div
@@ -457,7 +437,13 @@ function TaskCard(props) {
       >
         <div className="flex flex-col gap-1 pl-2 w-[300px] flex-grow">
           <div className="flex flex-row items-center justify-between">
-            <PriorityCard priority={props.task.priority} />
+            <div className="flex flex-row">
+              <PriorityCard priority={props.task.priority} />
+              <AssigneeAvatars
+                classy="w-7 h-7 border-2 border-white rounded-full"
+                avatars={props.task?.assigneeAvatars}
+              />
+            </div>
             <div>
               <button
                 onClick={toggleEditMode}
@@ -501,11 +487,34 @@ function TaskCard(props) {
               })}
             </div>
           )}
-          <div className="grow flex flex-row">
-            {props.task.tags !== null &&
-              props.task.tags.map((tag, key) => {
-                return <HashTags key={key} tag={tag} />;
-              })}
+          <div className="flex flex-row items-center justify-center">
+            <div className="flex flex-row grow">
+              {props.task?.tags !== null &&
+                props.task?.tags.map((tag, key) => {
+                  return <HashTags key={key} tag={tag} />;
+                })}
+            </div>
+            <div className="flex flex-row gap-3">
+              {props.task?.Comments !== null &&
+                props.task?.Comments.length !== 0 && (
+                  <div className="flex flex-row justify-center items-center gap-1">
+                    <MessageSquare className="h-4 w-4" />
+                    <div className="text-[14px]">
+                      {props.task?.Comments !== null
+                        ? props.task?.Comments.length
+                        : 0}
+                    </div>
+                  </div>
+                )}
+              {props.task?.assigneeAvatars !== null && props.task?.assigneeAvatars.length !== 0 && (
+                <div className="flex flex-row justify-center items-center gap-1">
+                  <Paperclip className="h-4 w-4" />
+                  <div className="text-[14px]">
+                    {props.task?.assigneeAvatars !== null ? props.task?.assigneeAvatars.length : 0}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -552,7 +561,7 @@ function TaskCard(props) {
               <div className="flex flex-row gap-2 items-center  text-[14px] ">
                 <AssigneeAvatars
                   classy="w-7 h-7 border-2 border-white rounded-full"
-                  avatars={avatars}
+                  avatars={props.task?.assigneeAvatars}
                 />
                 <FriendsDrop taskId={props.task.id} />
               </div>
@@ -708,7 +717,7 @@ function TaskCard(props) {
         </div>
         {textAreaType !== "upload" && textAreaType !== "hashtags" ? (
           <div className=" w-full rounded-xl flex flex-col gap-4  p-3 text-[14px] text-[#202020]">
-            {Comments.map((comment, key) => {
+            {props.task?.Comments.map((comment, key) => {
               return (
                 <Comment
                   commentId={comment.id}

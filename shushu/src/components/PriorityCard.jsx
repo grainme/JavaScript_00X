@@ -30,7 +30,7 @@ export function PriorityCard(props) {
 
   return (
     <span
-      className={`w-[3rem] font-Bricolage text-xs font-medium mr-2 px-2.5 py-0.5 rounded ${bgColor} ${textColor} ${darkBgColor} ${darkTextColor}`}
+      className={`w-[3rem] font-Bricolage flex justify-center items-center text-xs font-medium mr-2 px-2.5 py-0.5 rounded ${bgColor} ${textColor} ${darkBgColor} ${darkTextColor}`}
     >
       {props.priority}
     </span>

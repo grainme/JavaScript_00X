@@ -14,6 +14,7 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import ColumnContainer from "./ColumnContainer";
 import TaskCard from "./TaskCard";
+import { Avatar } from "antd";
 
 const defaultColumns = [
   { id: "todo", title: "Todo" },
@@ -31,6 +32,8 @@ export function KanbanBoard() {
   const [tasksUser, setTasksUser] = useState([]);
   const [userAvatar, setUserAvatar] = useState("");
   const [movedTasks, setMovedTasks] = useState([]);
+  const [Comments, setComments] = useState([]);
+  const [avatars, setAvatars] = useState([]);
 
   useEffect(() => {
     const checkAvatar = async () => {
@@ -40,7 +43,7 @@ export function KanbanBoard() {
           .select()
           .eq("id", user?.id)
           .single();
-        setUserAvatar(data.avatar_url);
+        setUserAvatar(data?.avatar_url);
       } catch (error) {
         console.error(error);
       }
@@ -96,19 +99,70 @@ export function KanbanBoard() {
   };
 
   useEffect(() => {
-    const newTasks = tasksUser.map((task) => ({
-      id: task.id,
-      columnId: task.status,
-      content: task.description,
-      title: task.title,
-      priority: task.priority,
-      dueDate: task.due_date,
-      images: task.images,
-      assignee: task.assignee,
-      tags: task.tags,
-    }));
-    setTasks(newTasks);
+    const fetchData = async () => {
+      const newTasks = await Promise.all(
+        tasksUser.map(async (task) => {
+          const comments = await retrieveComments(task.id);
+          const avatars = await fetchAvatars(task.assignee);
+
+          return {
+            id: task.id,
+            columnId: task.status,
+            content: task.description,
+            title: task.title,
+            priority: task.priority,
+            dueDate: task.due_date,
+            images: task.images,
+            assignee: task.assignee,
+            tags: task.tags,
+            Comments: comments,
+            assigneeAvatars: avatars,
+          };
+        })
+      );
+
+      setTasks(newTasks);
+    };
+
+    fetchData();
   }, [tasksUser]);
+
+  async function retrieveComments(taskId) {
+    try {
+      const { data, error } = await supabase
+        .from("comments")
+        .select()
+        .eq("task_id", taskId);
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error retrieving Comments:", error);
+      return [];
+    }
+  }
+
+  async function fetchAvatars(taskAssignee) {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .in("id", taskAssignee);
+
+      if (error) {
+        console.error("Error fetching avatars:", error);
+        return [];
+      }
+
+      return data;
+    } catch (error) {
+      console.error("An error occurred:", error);
+      return [];
+    }
+  }
 
   async function createTask() {
     try {
