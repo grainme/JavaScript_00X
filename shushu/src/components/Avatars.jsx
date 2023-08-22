@@ -70,21 +70,31 @@ export function Avatars(props) {
     )
     .subscribe();
 
-  console.log(avatars);
+  const maxVisibleAvatars = 4;
+  const remainingAvatars = Math.max(avatars.length - maxVisibleAvatars, 0);
 
   return (
     <div className="flex items-center justify-center">
       <div className="flex -space-x-3 items-center">
-        {avatars.map(
-          (avatar, index) =>
-            avatar.avatar_url && (
-              <img
-                key={index}
-                className={props.classy}
-                src={avatar.avatar_url}
-                alt=""
-              />
-            )
+        {avatars
+          .slice(0, maxVisibleAvatars)
+          .map(
+            (avatar, index) =>
+              avatar.avatar_url && (
+                <img
+                  key={index}
+                  className={props.classy}
+                  src={avatar.avatar_url}
+                  alt=""
+                />
+              )
+          )}
+        {remainingAvatars > 0 && (
+          <div
+            className={`w-10 h-10 rounded-full bg-red-100 border-red-200 text-red-500 font-semibold flex items-center justify-center ${props.classy}`}
+          >
+            +{remainingAvatars}
+          </div>
         )}
       </div>
     </div>

@@ -418,8 +418,6 @@ function TaskCard(props) {
     );
   }
 
-  console.log(props.task.Comments);
-
   return (
     <>
       <div
@@ -462,7 +460,7 @@ function TaskCard(props) {
             </div>
           </div>
           {props.task.title && (
-            <div className="font-Raleway text-[21px] font-[500]">{title}</div>
+            <div className="font-Raleway text-[21px] font-medium">{title}</div>
           )}
 
           <div className=" font-Raleway overflow-y-auto overflow-x-hidden whitespace-pre-wrap text-zinc-600 text-[13px] mt-1 mb-2">
@@ -506,14 +504,17 @@ function TaskCard(props) {
                     </div>
                   </div>
                 )}
-              {props.task?.assigneeAvatars !== null && props.task?.assigneeAvatars.length !== 0 && (
-                <div className="flex flex-row justify-center items-center gap-1">
-                  <Paperclip className="h-4 w-4" />
-                  <div className="text-[14px]">
-                    {props.task?.assigneeAvatars !== null ? props.task?.assigneeAvatars.length : 0}
+              {props.task?.assigneeAvatars !== null &&
+                props.task?.assigneeAvatars.length !== 0 && (
+                  <div className="flex flex-row justify-center items-center gap-1">
+                    <Paperclip className="h-4 w-4" />
+                    <div className="text-[14px]">
+                      {props.task?.assigneeAvatars !== null
+                        ? props.task?.assigneeAvatars.length
+                        : 0}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           </div>
         </div>
@@ -669,7 +670,7 @@ function TaskCard(props) {
               />
             </div>
           ) : textAreaType === "hashtags" ? (
-            <div className=" w-full rounded-xl  bg-[#F5F5F5] p-1 flex flex-col ">
+            <div className=" w-full rounded-xl p-1 flex flex-col ">
               <input
                 className="text-[14px] h-[3rem] p-5 text-[#202020] bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
                 autoFocus
@@ -729,6 +730,13 @@ function TaskCard(props) {
                 />
               );
             })}
+          </div>
+        ) : textAreaType === "hashtags" ? (
+          <div className="flex flex-row">
+            {props.task?.tags !== null &&
+              props.task?.tags.map((tag, key) => {
+                return <HashTags key={key} tag={tag} />;
+              })}
           </div>
         ) : (
           textAreaType !== "hashtags" && (

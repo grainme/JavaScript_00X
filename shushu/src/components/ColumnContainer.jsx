@@ -98,7 +98,7 @@ function ColumnContainer(props) {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-[#F5F5F5] rounded-2xl w-1/3 flex flex-col font-Bricolage"
+      className="bg-[#F5F5F5] rounded-lg w-1/3 flex flex-col font-Bricolage"
     >
       {/* Column title */}
       <div
