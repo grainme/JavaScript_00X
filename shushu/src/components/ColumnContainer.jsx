@@ -79,9 +79,9 @@ function ColumnContainer(props) {
         ref={setNodeRef}
         style={style}
         className="
-          bg-columnBackgroundColor
+          bg-black
           opacity-40
-          border-2
+          border-7
           border-pink-500
           w-[350px]
           h-[500px]
@@ -98,7 +98,7 @@ function ColumnContainer(props) {
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-[#F5F5F5] rounded-lg w-1/3 flex flex-col font-Bricolage"
+      className="rounded-lg w-1/4 flex flex-col font-Bricolage"
     >
       {/* Column title */}
       <div
@@ -112,29 +112,43 @@ function ColumnContainer(props) {
         "
       >
         <div className="flex flex-row justify-between items-center text-slate-900">
-          <div className="flex items-center grow gap-4 text-[20px] font-normal">
+          <div className="flex items-center grow gap-2 text-[15px] font-normal">
             <div
-              className={`w-2 h-2 rounded-full ${
+              className={`w-3 h-3 rounded-sm ${
                 props.column.id === "todo"
-                  ? "bg-red-500"
+                  ? "bg-gray-400"
                   : props.column.id === "doing"
-                  ? "bg-blue-500"
-                  : "bg-[#8BC48A]"
+                  ? "bg-red-500 text-red-500"
+                  : props.column.id === "review"
+                  ? "bg-amber-500 "
+                  : "bg-green-400 "
               }`}
             />
-            <div>{props.column.title}</div>
+            <div
+              className={`text-[16px] tracking-[.009rem] ${
+                props.column.id === "todo"
+                  ? " text-gray-400"
+                  : props.column.id === "doing"
+                  ? " text-red-500"
+                  : props.column.id === "review"
+                  ? " text-amber-500"
+                  : " text-green-500"
+              }`}
+            >
+              {props.column.title}
+            </div>
           </div>
           {props.column.id === "todo" && (
             <div className="flex flex-row gap-2 mr-5">
               <PlusIcon
-                className="w-6 h-6 p-1 text-indigo-600 bg-indigo-200 hover:bg-indigo-300 rounded-md relative cursor-pointer"
+                className="w-6 h-6 p-1 text-blue-600 bg-blue-200 hover:bg-blue-300 rounded-md relative cursor-pointer"
                 onClick={() => {
                   props.createTask(props.column.id);
                 }}
               />
               <Save
                 onClick={updateMovedTasksStatus}
-                className="w-6 h-6 p-1  text-indigo-600 bg-indigo-200 hover:bg-indigo-300 rounded-md relative cursor-pointer"
+                className="w-6 h-6 p-1  text-blue-600 bg-blue-200 hover:bg-blue-300 rounded-md relative cursor-pointer"
               />
               {savingWorkspace && (
                 <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 w-[15rem] rounded-md m-auto mb-1 h-12 flex items-center justify-center text-zinc-100">
@@ -172,18 +186,8 @@ function ColumnContainer(props) {
           )}
         </div>
       </div>
-      <div className="m-3">
-        {props.column.id === "todo" ? (
-          <div className=" h-[2px] bg-red-500 rounded-sm" />
-        ) : props.column.id === "doing" ? (
-          <div className=" h-[2px] bg-blue-500 rounded-sm" />
-        ) : (
-          <div className=" h-[2px] bg-[#8BC48A] rounded-sm" />
-        )}
-      </div>
-
       {/* Column task container */}
-      <div className="flex flex-grow h-[28rem] flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto ">
+      <div className="flex flex-grow min-h-[31rem] flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto ">
         <SortableContext items={tasksIds}>
           {props.tasks.map((task) => (
             <TaskCard

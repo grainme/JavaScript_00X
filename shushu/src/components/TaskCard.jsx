@@ -147,7 +147,10 @@ function TaskCard(props) {
       const oldTags = existingData.tags || [];
 
       // Create an updatedTags array by adding the new tag if it's not null
-      const updatedTags = newTag.length !== 0 ? [...oldTags, newTag] : oldTags;
+      const updatedTags =
+        newTag !== null && newTag?.length !== 0
+          ? [...oldTags, newTag]
+          : oldTags;
 
       // Update the task in the database with the modified data
       const { data: updateData, error: updateError } = await supabase
@@ -176,7 +179,7 @@ function TaskCard(props) {
       const { data, error } = await supabase
         .from("comments")
         .select()
-        .eq("task_id", props.task.id);
+        .eq("task_id", props.task?.id);
       if (error) {
         throw error;
       }

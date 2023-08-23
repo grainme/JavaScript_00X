@@ -17,9 +17,10 @@ import TaskCard from "./TaskCard";
 import { Avatar } from "antd";
 
 const defaultColumns = [
-  { id: "todo", title: "Todo" },
-  { id: "doing", title: "Work in progress" },
-  { id: "done", title: "Done :)" },
+  { id: "todo", title: "TO DO" },
+  { id: "doing", title: "IN PROGRESS" },
+  { id: "done", title: "DONE" },
+  { id: "review", title: "NEED REVIEW" },
 ];
 
 export function KanbanBoard() {

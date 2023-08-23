@@ -6,11 +6,13 @@ import { Waitlist } from "./pages/waitlist";
 import { Messages } from "./pages/messages";
 import { Wip } from "./pages/Wip";
 import { Pomodoro } from "./pages/Pomodoro";
+import { LandingPage } from "./pages/LandingPage";
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/home" element={<LandingPage />} />
         <Route path="/" element={<Login />} />
         <Route path="/work" element={<Dashboard />} />
         <Route path="/setup" element={<ProfileSetup />} />
