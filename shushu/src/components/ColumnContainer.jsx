@@ -98,7 +98,7 @@ function ColumnContainer(props) {
     <div
       ref={setNodeRef}
       style={style}
-      className="rounded-lg w-1/4 flex flex-col font-Bricolage"
+      className="rounded-lg w-1/4 flex flex-col font-Bricolage bg-[#f6f7f3]"
     >
       {/* Column title */}
       <div
@@ -187,7 +187,7 @@ function ColumnContainer(props) {
         </div>
       </div>
       {/* Column task container */}
-      <div className="flex flex-grow min-h-[31rem] flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto ">
+      <div className="flex flex-grow min-h-[35rem] flex-col gap-3 p-2 overflow-x-hidden overflow-y-auto ">
         <SortableContext items={tasksIds}>
           {props.tasks.map((task) => (
             <TaskCard

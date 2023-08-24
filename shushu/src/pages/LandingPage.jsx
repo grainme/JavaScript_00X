@@ -12,9 +12,7 @@ export function LandingPage() {
       <div className="flex flex-row justify-between items-center mr-12 ml-12 mt-8">
         <div className="flex flex-row gap-6">
           <Link>Home</Link>
-          <Link>Invest</Link>
           <Link>About</Link>
-          <Link>Blog</Link>
           <Link>FAQ</Link>
         </div>
         <div>

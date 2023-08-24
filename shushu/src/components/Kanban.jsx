@@ -306,7 +306,7 @@ export function KanbanBoard() {
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
       >
-        <div className="flex ml-5 mr-5 mb-3 gap-[2rem]">
+        <div className="flex ml-5 mr-5 mb-3 gap-[1rem] ">
           <SortableContext items={columnIds}>
             {columns.map((col) => (
               <ColumnContainer

@@ -173,8 +173,9 @@ function TaskCard(props) {
     }
   }
 
-  const retrieveComments = async (props) => {
+  const retrieveComments = async () => {
     try {
+      console.log("Hello");
       // Get the public URL of the avatar image from Supabase storage
       const { data, error } = await supabase
         .from("comments")
@@ -183,6 +184,7 @@ function TaskCard(props) {
       if (error) {
         throw error;
       }
+
       setComments(data);
     } catch (error) {
       console.error("Error retrieving Comments:", error);
@@ -199,7 +201,7 @@ function TaskCard(props) {
           cmt_date: timeNow(),
         },
       ]);
-      await retrieveComments();
+      console.log(data);
       if (error) {
         console.error("Error inserting comment:", error.message);
         return;
@@ -277,28 +279,22 @@ function TaskCard(props) {
     }
   };
 
-  useEffect(() => {
-    const channelB = supabase
-      .channel("schema-db-changes")
-      .on(
-        "postgres_changes",
-        {
-          table: "tasks",
-          event: "*",
-          schema: "public",
-        },
-        (payload) => {
-          retrieveComments();
-          retrieveImages(); // Call retrieveImages when a change happens in the "tasks" table
-        }
-      )
-      .subscribe();
-
-    return () => {
-      // Unsubscribe the channel when the component unmounts
-      channelB.unsubscribe();
-    };
-  }, []);
+  const channelB = supabase
+    .channel("schema-db-changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+      },
+      (payload) => {
+        console.log(payload);
+        
+        retrieveComments();
+        retrieveImages();
+      }
+    )
+    .subscribe();
 
   const handleInputChange = (e) => {
     setTitle(e.target.value);
@@ -338,7 +334,8 @@ function TaskCard(props) {
   };
 
   function saveComment() {
-    pushCommentBase(props.task.id, comment);
+    pushCommentBase(props.task?.id, comment);
+    retrieveComments();
     setComment(""); // Clear the comment input after saving
   }
 
@@ -721,7 +718,7 @@ function TaskCard(props) {
         </div>
         {textAreaType !== "upload" && textAreaType !== "hashtags" ? (
           <div className=" w-full rounded-xl flex flex-col gap-4  p-3 text-[14px] text-[#202020]">
-            {props.task?.Comments.map((comment, key) => {
+            {Comments.map((comment, key) => {
               return (
                 <Comment
                   commentId={comment.id}
