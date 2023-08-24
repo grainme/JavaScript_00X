@@ -14,7 +14,6 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import { createPortal } from "react-dom";
 import ColumnContainer from "./ColumnContainer";
 import TaskCard from "./TaskCard";
-import { Avatar } from "antd";
 
 const defaultColumns = [
   { id: "todo", title: "TO DO" },
@@ -52,35 +51,6 @@ export function KanbanBoard() {
     checkAvatar();
   }, [user?.id]);
 
-  useEffect(() => {
-    let subscription;
-
-    if (user?.id) {
-      getTasksForUser(user.id);
-
-      subscription = supabase
-        .channel("schema-db-changes")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-          },
-          (payload) => {
-            getTasksForUser(user.id);
-          }
-        )
-        .subscribe();
-    }
-
-    // Clean up the subscription when the component unmounts or user.id changes
-    return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
-    };
-  }, [user?.id]);
-
   const getTasksForUser = async () => {
     const userId = user?.id;
     try {
@@ -100,31 +70,37 @@ export function KanbanBoard() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const newTasks = await Promise.all(
-        tasksUser.map(async (task) => {
-          const comments = await retrieveComments(task.id);
-          const avatars = await fetchAvatars(task.assignee);
+    if (user?.id) {
+      getTasksForUser(user.id);
+    }
+  }, [user?.id]);
 
-          return {
-            id: task.id,
-            columnId: task.status,
-            content: task.description,
-            title: task.title,
-            priority: task.priority,
-            dueDate: task.due_date,
-            images: task.images,
-            assignee: task.assignee,
-            tags: task.tags,
-            Comments: comments,
-            assigneeAvatars: avatars,
-          };
-        })
-      );
+  const fetchData = async () => {
+    const newTasks = await Promise.all(
+      tasksUser.map(async (task) => {
+        const comments = await retrieveComments(task.id);
+        const avatars = await fetchAvatars(task.assignee);
 
-      setTasks(newTasks);
-    };
+        return {
+          id: task.id,
+          columnId: task.status,
+          content: task.description,
+          title: task.title,
+          priority: task.priority,
+          dueDate: task.due_date,
+          images: task.images,
+          assignee: task.assignee,
+          tags: task.tags,
+          Comments: comments,
+          assigneeAvatars: avatars,
+        };
+      })
+    );
 
+    setTasks(newTasks);
+  };
+
+  useEffect(() => {
     fetchData();
   }, [tasksUser]);
 
@@ -295,6 +271,22 @@ export function KanbanBoard() {
       return arrayMove(tasks, activeIndex, overIndex);
     });
   }
+
+  const channelA = supabase
+    .channel("schema-db-changes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+      },
+      (payload) => {
+        console.log(payload);
+        getTasksForUser(user?.id);
+        fetchData();
+      }
+    )
+    .subscribe();
 
   return (
     <div>

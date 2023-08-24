@@ -147,10 +147,10 @@ function TaskCard(props) {
       const oldTags = existingData.tags || [];
 
       // Create an updatedTags array by adding the new tag if it's not null
-      const updatedTags =
-        newTag !== null && newTag?.length !== 0
-          ? [...oldTags, newTag]
-          : oldTags;
+      let updatedTags = [...oldTags];
+      if (newTag !== null && newTag?.length > 0) {
+        updatedTags = [...oldTags, newTag];
+      }
 
       // Update the task in the database with the modified data
       const { data: updateData, error: updateError } = await supabase
@@ -248,9 +248,7 @@ function TaskCard(props) {
         console.error("Error removing image:", error.message);
         return;
       }
-
       console.log("Image removed successfully!");
-      // You might want to refresh your component's data after removing the image
     } catch (error) {
       console.error("Error removing image:", error);
     }
@@ -267,34 +265,12 @@ function TaskCard(props) {
         console.error("Error retrieving images:", error);
         return;
       }
-
-      // Update the images array in your task state
       const updatedTask = { ...props.task, images: data[0].images };
-      // Update the task in the parent component's state or context
-      // Example: updateTask(updatedTask);
-
       setImagesInsideModal(updatedTask.images);
     } catch (error) {
       console.error("Error retrieving images:", error);
     }
   };
-
-  const channelB = supabase
-    .channel("schema-db-changes")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-      },
-      (payload) => {
-        console.log(payload);
-        
-        retrieveComments();
-        retrieveImages();
-      }
-    )
-    .subscribe();
 
   const handleInputChange = (e) => {
     setTitle(e.target.value);
@@ -674,7 +650,6 @@ function TaskCard(props) {
               <input
                 className="text-[14px] h-[3rem] p-5 text-[#202020] bg-transparent resize-none focus:outline-none focus:border-transparent focus:ring-0 outline-none border-transparent ring-0"
                 autoFocus
-                // value={tag}
                 placeholder="Add tags to your tasks"
                 onChange={handletags}
               />
@@ -712,6 +687,13 @@ function TaskCard(props) {
                 className="flex ml-auto m-2 px-3 py-1 text-[14px] rounded bg-blue-500 text-white hover:bg-blue-600"
               >
                 Save changes
+              </button>
+            ) : textAreaType === "hashtags" ? (
+              <button
+                onClick={saveChanges}
+                className="flex ml-auto m-2 px-3 py-1 text-[14px] rounded bg-blue-500 text-white hover:bg-blue-600"
+              >
+                Save Tags
               </button>
             ) : null}
           </div>
